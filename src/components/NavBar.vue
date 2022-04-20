@@ -34,11 +34,10 @@
       <div class="navbar-end">
         <p class="navbar-item">
           <router-link to="/Cart_Book" style="color: #ac3b61"
-            ><button
-              class="button"
-              style="background: linear-gradient(221deg, #edc7b7, #eee2dc 73%)"
-            >
-              <span style="color: #ac3b61">2</span>
+            ><button class="button">
+              <span style="color: #ac3b61"
+                >(2)<!--จำนวนหนังสือซื้อที่ซื้อ--></span
+              >
               <span class="icon is-size-5 ml-2"
                 ><i class="fas fa-shopping-cart" style="color: #ac3b61"> </i
               ></span>

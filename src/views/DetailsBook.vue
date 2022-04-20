@@ -22,10 +22,10 @@
               ได้พบเจอกับเด็กสาวผู้หนึ่ง
               จนเกิดเป็นเรื่องราวแห่งความรักและความหวัง
             </p>
-            <p class="subtitle is-6">เขียนโดย :</p>
-            <p class="subtitle is-6">ประเภท :</p>
-            <p class="subtitle is-6">วันที่วางขาย :</p>
-            <p class="subtitle is-6">ราคา :</p>
+            <p class="subtitle is-6">เขียนโดย : 有馬あるま</p>
+            <p class="subtitle is-6">ประเภท : Romance, Action</p>
+            <p class="subtitle is-6">วันที่วางขาย : 1/01/2020</p>
+            <p class="subtitle is-6">ราคา : 125 บาท</p>
 
             <br />
             <p class="level-centere">

@@ -44,60 +44,48 @@ export default {
     return {
       Book_list: [
         {
-          id: 0,
-          Book_name: "Exorcist wa Otosenai ",
-          Pen_name: "Apple",
-          price: 100,
-          is_favorite: false,
-          Book_type: ["comedy", "Romance"],
-          image:
-            "https://i0.wp.com/anitrendz.net/news/wp-content/uploads/2021/08/princess-connect-redive-season-2-trailer-screenshot.png",
-          detail_book:
-            " เด็กหนุ่มผู้ถูกรับเลือกจากพระเจ้าให้กลายเป็นเอ็กซอร์ซิสผู้แข็งแกร่งที่สุดซึ่งมีหน้าที่ในการปราบจอมมาร ได้พบเจอกับเด็กสาวผู้หนึ่ง จนเกิดเป็นเรื่องราวแห่งความรักและความหวัง ",
-        },
-        {
-          id: 1,
-          Book_name: "This Is the Memory Until the Girl ",
-          Pen_name: "Panasonic",
-          price: 120,
-          is_favorite: false,
-          Book_type: ["comedy", "Drama"],
-          image:
-            "https://skilfulgamer.com/wp-content/uploads/2022/02/genshin-impact-original-art-from-website_11zon-1.jpg",
-          detail_book:
-            "  เด็กสาวผู้มีปัญหาในการเข้าสังคม ที่ได้พบกับเพื่อนสนิทที่รู้จักกันผ่านทางเกมออนไลน์ จนพัฒนาความสัมพันธ์จนไปเป็นคนรักในที่สุด เรื่องนี้ฟีลกู๊ดล้วนๆครับ ออกแนวความสัมพันธ์พระนาง น่ารักกุ๊กกิ๊ก นางเอกมีปัญหาเรื่องสนทนากับคนทั่วไปแบบโคมิเลย ต้องใช้มือถือช่วยพูด พระเอกเลยมีเวลาโชว์ความสุภาพบุรษ จนความรู้สึกค่อยๆเปลี่ยนไปครับ",
-        },
-        {
-          id: 2,
-          Book_name: "Vintage Model Car",
-          Pen_name: "Unknow",
-          price: 150,
-          is_favorite: false,
-          Book_type: ["Action", "Romance"],
-          image:
-            "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-          detail_book: "บลาๆ",
-        },
-        {
           id: 3,
-          Book_name: "Case for iPhone 11 Pro",
+          Book_name: "SPY x FAMILY",
           Pen_name: "Unknow",
           price: 100,
           is_favorite: true,
           Book_type: ["comedy", "Romance"],
           image:
-            "https://images.unsplash.com/photo-1601593346740-925612772716?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+            "https://cdn-local.mebmarket.com/meb/server1/114476/Thumbnail/book_detail_large.gif?2",
           detail_book: "บลาๆ",
         },
+
         {
-          id: 4,
-          Book_name: "Air freshener",
+          id: 6,
+          Book_name: "OVERLORD เล่ม 13",
           Pen_name: "Febreze",
-          price: 80,
+          price: 180,
           is_favorite: false,
           Book_type: ["comedy", "action"],
           image:
-            "https://images.unsplash.com/photo-1572635196243-4dd75fbdbd7f?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+            "https://cdn-local.mebmarket.com/meb/server1/191051/Thumbnail/book_detail_large.gif?5",
+          detail_book: "บลาๆ",
+        },
+        {
+          id: 7,
+          Book_name: "Mushoku Tensei",
+          Pen_name: "Febreze",
+          price: 180,
+          is_favorite: false,
+          Book_type: ["comedy", "action"],
+          image:
+            "https://www.osemocphoto.com/collectManga/6653/6653_cover.jpg?0",
+          detail_book: "บลาๆ",
+        },
+        {
+          id: 9,
+          Book_name: "Ore ni Trauma wo Ataeta Joshi-tachi",
+          Pen_name: "Unknow",
+          price: 100,
+          is_favorite: true,
+          Book_type: ["Drama", "Romance"],
+          image:
+            "https://www.osemocphoto.com/collectManga/11256/11256_cover.jpg?1",
           detail_book: "บลาๆ",
         },
       ],

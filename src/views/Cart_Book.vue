@@ -29,12 +29,14 @@
         </div>
         <div class="column is-10 has-text-centered is-offset-1">
           <h2 class="subtitle">จำนวนหนังสือซื้อที่ซื้อ : 2 เล่ม</h2>
-          <button class="button">
-            ยืนยันการชำระเงิน&emsp;<i
-              class="fa fa-check"
-              aria-hidden="true"
-            ></i>
-          </button>
+
+          <router-link to="/CheckoutPage" style="color: #123c69">
+            <button class="button">
+              ไปหน้าชำระเงิน&emsp;<i
+                class="fa fa-arrow-circle-right"
+                aria-hidden="true"
+              ></i></button
+          ></router-link>
         </div>
       </div>
     </div>

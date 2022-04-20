@@ -70,7 +70,7 @@
                     นักเขียน
                   </label>
                   <label class="radio">
-                    <input type="radio" v-model="picked" value="Author" />
+                    <input type="radio" v-model="picked" value="Admin" />
                     แอดมิน
                   </label>
                 </div>

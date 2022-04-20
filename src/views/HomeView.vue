@@ -1,7 +1,7 @@
 <template>
   <NavBar />
   <MyCarosel />
-
+  <WarnPay />
   <div class="columns">
     <div class="column mt-4">
       <section class="section">
@@ -10,7 +10,7 @@
             >&#xe87d; มาใหม่สุด
           </span>
 
-          <div class="field has-addons is-pulled-right">Tag</div>
+          <div class="field has-addons is-pulled-right"></div>
           <div class="divider is-info" style="color: #123c69">Latest Book</div>
         </h1>
       </section>
@@ -93,12 +93,14 @@
 import { defineComponent } from "vue";
 import NavBar from "@/components/NavBar";
 import MyCarosel from "@/components/MyCarosel";
+import WarnPay from "@/components/WarnPay";
 
 export default defineComponent({
   name: "HomeView",
   components: {
     NavBar,
     MyCarosel,
+    WarnPay,
   },
   data() {
     return {
@@ -114,53 +116,87 @@ export default defineComponent({
           is_favorite: false,
           Book_type: ["comedy", "Romance"],
           image:
-            "https://i0.wp.com/anitrendz.net/news/wp-content/uploads/2021/08/princess-connect-redive-season-2-trailer-screenshot.png",
+            "https://www.osemocphoto.com/collectManga/10768/10768_cover.jpg?1",
           detail_book:
             " เด็กหนุ่มผู้ถูกรับเลือกจากพระเจ้าให้กลายเป็นเอ็กซอร์ซิสผู้แข็งแกร่งที่สุดซึ่งมีหน้าที่ในการปราบจอมมาร ได้พบเจอกับเด็กสาวผู้หนึ่ง จนเกิดเป็นเรื่องราวแห่งความรักและความหวัง ",
         },
         {
           id: 1,
-          Book_name: "This Is the Memory Until the Girl ",
+          Book_name: "4ปีที่อินเดีย (4 YEARS IN INDIA)",
           Pen_name: "Panasonic",
           price: 120,
           is_favorite: false,
           Book_type: ["comedy", "Drama"],
           image:
-            "https://skilfulgamer.com/wp-content/uploads/2022/02/genshin-impact-original-art-from-website_11zon-1.jpg",
+            "https://cdn-local.mebmarket.com/meb/server1/191483/Thumbnail/book_detail_large.gif?4",
           detail_book:
             "  เด็กสาวผู้มีปัญหาในการเข้าสังคม ที่ได้พบกับเพื่อนสนิทที่รู้จักกันผ่านทางเกมออนไลน์ จนพัฒนาความสัมพันธ์จนไปเป็นคนรักในที่สุด เรื่องนี้ฟีลกู๊ดล้วนๆครับ ออกแนวความสัมพันธ์พระนาง น่ารักกุ๊กกิ๊ก นางเอกมีปัญหาเรื่องสนทนากับคนทั่วไปแบบโคมิเลย ต้องใช้มือถือช่วยพูด พระเอกเลยมีเวลาโชว์ความสุภาพบุรษ จนความรู้สึกค่อยๆเปลี่ยนไปครับ",
         },
         {
           id: 2,
-          Book_name: "Vintage Model Car",
+          Book_name: "สุดยอดระบบอัตราบอกความสำเร็จ",
           Pen_name: "Unknow",
           price: 150,
           is_favorite: false,
           Book_type: ["Action", "Romance"],
           image:
-            "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+            "https://www.osemocphoto.com/collectManga/11139/11139_cover.jpg?1",
           detail_book: "บลาๆ",
         },
         {
           id: 3,
-          Book_name: "Case for iPhone 11 Pro",
+          Book_name: "SPY x FAMILY",
           Pen_name: "Unknow",
           price: 100,
           is_favorite: true,
           Book_type: ["comedy", "Romance"],
           image:
-            "https://cdna.artstation.com/p/assets/images/images/041/717/352/large/u-o-s-a-91946356-p0.jpg?1632486134",
+            "https://cdn-local.mebmarket.com/meb/server1/114476/Thumbnail/book_detail_large.gif?2",
           detail_book: "บลาๆ",
         },
         {
           id: 4,
-          Book_name: "Air freshener",
+          Book_name:
+            "The Alchemist Who Survived Now Dreams of a Quiet City Life",
           Pen_name: "Febreze",
           price: 80,
           is_favorite: false,
           Book_type: ["comedy", "action"],
           image:
-            "https://images.unsplash.com/photo-1572635196243-4dd75fbdbd7f?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+            "https://www.osemocphoto.com/collectManga/8555/8555_cover.jpg?0",
+          detail_book: "บลาๆ",
+        },
+        {
+          id: 5,
+          Book_name: "Mushoku Tensei",
+          Pen_name: "Febreze",
+          price: 180,
+          is_favorite: false,
+          Book_type: ["comedy", "action"],
+          image:
+            "https://cdn-local.mebmarket.com/meb/server1/191050/Thumbnail/book_detail_large.gif?5",
+          detail_book: "บลาๆ",
+        },
+        {
+          id: 6,
+          Book_name: "OVERLORD เล่ม 13",
+          Pen_name: "Febreze",
+          price: 180,
+          is_favorite: false,
+          Book_type: ["comedy", "action"],
+          image:
+            "https://cdn-local.mebmarket.com/meb/server1/191051/Thumbnail/book_detail_large.gif?5",
+          detail_book: "บลาๆ",
+        },
+        {
+          id: 7,
+          Book_name: "Mushoku Tensei",
+          Pen_name: "Febreze",
+          price: 180,
+          is_favorite: false,
+          Book_type: ["comedy", "action"],
+          image:
+            "https://www.osemocphoto.com/collectManga/6653/6653_cover.jpg?0",
           detail_book: "บลาๆ",
         },
       ],

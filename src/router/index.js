@@ -7,6 +7,7 @@ import DetailsBook from '../views/DetailsBook.vue'
 import Cart_Book from '../views/Cart_Book.vue'
 import DetailPromotion from '../views/DetailPromotion.vue'
 import AdminPage from '../views/AdminPage.vue'
+import CheckoutPage from '../views/CheckoutPage.vue'
 
 const routes = [
   {
@@ -50,7 +51,13 @@ const routes = [
     path: '/AdminPage',
     name: 'AdminPage',
     component: AdminPage
-  }
+  },
+  {
+    path: '/CheckoutPage',
+    name: 'CheckoutPage',
+    component: CheckoutPage
+  },
+
 ]
 
 const router = createRouter({

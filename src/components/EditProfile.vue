@@ -72,7 +72,7 @@
             <div class="control has-icons-left has-icons-right">
               <input
                 class="input is-medium is-rounded"
-                type="email"
+                type="text"
                 v-model="Email"
                 style="background-color: #eee2dc"
               />
