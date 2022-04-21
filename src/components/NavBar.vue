@@ -7,23 +7,19 @@
       <div class="navbar-start ml-3">
         <div class="navbar-item">
           <a>
-            <router-link to="/register" style="color: #ac3b61"
-              >สมัครสมาชิก</router-link
+            <router-link to="/Profile_user" style="color: #ac3b61"
+              >โปรไฟล์</router-link
             >
             <a class="ml-2 mr-1" style="color: #ac3b61">/</a>
             <router-link to="/login" style="color: #ac3b61">
-              ล็อคอินเข้าสู่ระบบ</router-link
-            >
-            <a class="ml-2 mr-1" style="color: #ac3b61">/</a>
-            <router-link to="/Profile_user" style="color: #ac3b61"
-              >โปรไฟล์</router-link
+              ออกจากระบบ</router-link
             >
           </a>
         </div>
       </div>
 
       <div class="navbar-canter">
-        <div class="navbar-item mt-2" style="margin-right: 120px">
+        <div class="navbar-item mt-2" style="margin-right: 100px">
           <span class="icon is-size-5 mr-2"
             ><i class="fas fa fa-home" style="color: #ac3b61"></i>
           </span>

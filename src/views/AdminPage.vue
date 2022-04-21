@@ -1,13 +1,27 @@
 <template >
   <NavbarAdmin />
   <MyCarosel />
-
+  <div class="divider is-info is-right" style="color: #123c69">
+    Manage book promotion &ensp;
+  </div>
+  <div class="level-right mr-3">
+    <div class="level-item">
+      <button class="button is-light" @click="Add_promotion = true">
+        เพิ่ม
+      </button>
+    </div>
+    <div class="level-item">
+      <button class="button is-light" @click="cancel_promotion = true">
+        ยกเลิก
+      </button>
+    </div>
+  </div>
   <div class="columns">
     <div class="column mt-4">
       <section class="section" id="section_one">
         <h1>
           <span class="material-icons" style="color: #123c69"
-            >&#xe87d; หนังสือที่รอการยืนยันลงขาย
+            >&#xef64; หนังสือที่รอการยืนยันลงขาย
           </span>
 
           <div class="field has-addons is-pulled-right" style="color: #123c69">
@@ -76,7 +90,7 @@
 
       <section class="section" id="section_two">
         <span class="material-icons" style="color: #123c69"
-          >&#xe865; หนังสือที่รอการยืนยันการลบ
+          >&#xe872; หนังสือที่รอการยืนยันการลบ
         </span>
 
         <div class="field has-addons is-pulled-right">คำขอล่าสุด</div>
@@ -141,7 +155,7 @@
       </div>
       <section class="section" id="section_three">
         <span class="material-icons" style="color: #123c69"
-          >&#xe865; รายละเอียดการเงิน
+          >&#xf041; รายละเอียดการเงิน
         </span>
 
         <div class="divider is-info" style="color: #123c69">
@@ -149,50 +163,161 @@
         </div>
       </section>
       <div class="hero-body">
-        <div class="box">
+        <div class="box" v-for="box in order" v-bind:key="box.id">
           <article class="media">
             <div class="media-left">
-              <figure class="image is-64x64">
-                <img
-                  src="https://bulma.io/images/placeholders/128x128.png"
-                  alt="Image"
-                />
+              <figure>
+                <img :src="box.image_check" class="image is-64x64" />
               </figure>
             </div>
             <div class="media-content">
               <div class="content">
                 <p>
-                  <strong>John Smith</strong> <small>@johnsmith</small>
-                  <small>31m</small>
+                  <strong>ออเดอร์ที่ {{ box.number_order }}</strong>
                   <br />
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Aenean efficitur sit amet massa fringilla egestas. Nullam
-                  condimentum luctus turpis.
+                  รายการหนังสือ:
+
+                  <span
+                    v-for="(value, index) in box.list_book"
+                    v-bind:key="index"
+                  >
+                    {{ value }} &ensp;</span
+                  ><br />ราคาทั้งหมด: {{ box.total_pice }}
                 </p>
               </div>
-              <nav class="level is-mobile">
-                <div class="level-left">
-                  <a class="level-item" aria-label="reply">
-                    <span class="icon is-small">
-                      <i class="fas fa-reply" aria-hidden="true"></i>
-                    </span>
-                  </a>
-                  <a class="level-item" aria-label="retweet">
-                    <span class="icon is-small">
-                      <i class="fas fa-retweet" aria-hidden="true"></i>
-                    </span>
-                  </a>
-                  <a class="level-item" aria-label="like">
-                    <span class="icon is-small">
-                      <i class="fas fa-heart" aria-hidden="true"></i>
-                    </span>
-                  </a>
+              <div class="level-right">
+                <div class="level-item">
+                  <button class="button is-light">ยืนยัน</button>
                 </div>
-              </nav>
+                <div class="level-item">
+                  <button class="button is-light">ไม่ยืนยัน</button>
+                </div>
+              </div>
             </div>
           </article>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="modal" :class="{ 'is-active': cancel_promotion }">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="cancel_promotion = false"
+      ></button>
+
+      <section class="modal-card-body">
+        <span
+          class="label is-size-4"
+          style="color: #123c69; text-align: center"
+        >
+          เลือกรายการที่จะยกเลิก
+        </span>
+        <p></p>
+        <br />
+        <div class="is-size-5" style="color: #123c69">
+          เลือกหัวข้อโปรโมชั่นที่จะลบ
+        </div>
+        <br />
+        <div class="select">
+          <select>
+            <option v-for="value in promotion" v-bind:key="value.id">
+              {{ value.title }}
+            </option>
+          </select>
+        </div>
+      </section>
+
+      <footer class="modal-card-foot">
+        <button class="button is-success">ยืนยัน</button>
+        <button class="button" @click="cancel_promotion = false">ยกเลิก</button>
+      </footer>
+    </div>
+  </div>
+  <div class="hero is fulheight"></div>
+  <div class="modal" :class="{ 'is-active': Add_promotion }">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <button
+        class="modal-close is-large"
+        aria-label="close"
+        @click="Add_promotion = false"
+      ></button>
+
+      <section class="modal-card-body">
+        <div class="field">
+          <span
+            class="label is-size-4"
+            style="color: #123c69; text-align: center"
+          >
+            รายละเอียดโปรโมชั่น
+          </span>
+        </div>
+
+        <div class="field">
+          <label class="label" style="color: #ac3b61"
+            >หัวข้อโปรโมชั่น
+            <!--ชื่อโปรโมชั่น--></label
+          >
+          <div class="control">
+            <input
+              class="input is-medium is-rounded"
+              type="text"
+              style="background-color: #eee2dc"
+              v-model="Book_name"
+            />
+          </div>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <label class="label" style="color: #ac3b61"
+              >เพิ่มรูปภาพโปรโมชั่น</label
+            >
+            <div class="file">
+              <label class="file-label">
+                <input class="file-input" type="file" name="resume" />
+                <span class="file-cta">
+                  <span class="file-icon">
+                    <i class="fas fa-upload"></i>
+                  </span>
+                  <span class="file-label"> Choose a file… </span>
+                </span>
+              </label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label" style="color: #ac3b61"
+              >วันหมดโปรโมชั่น
+              <!--เก็บเป็น date time คือ เซตเวลาเปน 23:59:59 ไปเลย อารมแบบ หมดวันนี้ประมานนั้น-->
+            </label>
+            <input
+              class="input is-fullwidth is-medium is-rounded"
+              type="date"
+              v-model="end_promotion"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" style="color: #ac3b61"
+            >รายละเอียดโปรโมชั่น</label
+          >
+          <div class="control">
+            <textarea
+              class="textarea is-medium is-rounded"
+              style="background-color: #eee2dc"
+              v-model="detail_book"
+            ></textarea>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-success">เพิ่ม</button>
+        <button class="button" @click="Add_promotion = false">ยกเลิก</button>
+      </footer>
     </div>
   </div>
 </template>
@@ -207,6 +332,22 @@ export default {
   },
   data() {
     return {
+      Add_promotion: false,
+      cancel_promotion: false,
+      promotion: [
+        {
+          id: 0,
+          title: "AZ",
+          desc: "เนื้อหา",
+        },
+
+        {
+          id: 1,
+          title: "BBBZ",
+          desc: "เนื้อหา",
+        },
+      ],
+
       Book_list: [
         {
           id: 0,
@@ -231,6 +372,30 @@ export default {
             "https://skilfulgamer.com/wp-content/uploads/2022/02/genshin-impact-original-art-from-website_11zon-1.jpg",
           detail_book:
             "  เด็กสาวผู้มีปัญหาในการเข้าสังคม ที่ได้พบกับเพื่อนสนิทที่รู้จักกันผ่านทางเกมออนไลน์ จนพัฒนาความสัมพันธ์จนไปเป็นคนรักในที่สุด เรื่องนี้ฟีลกู๊ดล้วนๆครับ ออกแนวความสัมพันธ์พระนาง น่ารักกุ๊กกิ๊ก นางเอกมีปัญหาเรื่องสนทนากับคนทั่วไปแบบโคมิเลย ต้องใช้มือถือช่วยพูด พระเอกเลยมีเวลาโชว์ความสุภาพบุรษ จนความรู้สึกค่อยๆเปลี่ยนไปครับ",
+        },
+      ],
+      order: [
+        {
+          id: 0,
+          list_book: ["Exorcist wa Otosenai", "Mushoku Tensei"],
+          number_order: 1,
+          stage: "succeed",
+          image_check:
+            "https://f.ptcdn.info/360/068/000/q6il3skqoY5eB248knw-o.jpg",
+          total_pice: 300,
+        },
+        {
+          id: 1,
+          Book_name: "Exorcist ",
+          list_book: [
+            "สุดยอดระบบอัตราบอกความสำเร็จ",
+            "Ore ni Trauma wo Ataeta Joshi-tachi",
+          ],
+          number_order: 2,
+          stage: "wait",
+          image_check:
+            "https://f.ptcdn.info/393/067/000/q2uaruibdir370ioYjS-o.jpg",
+          total_pice: 250,
         },
       ],
     };

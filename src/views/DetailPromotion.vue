@@ -7,7 +7,7 @@
           <img src="https://dr.lnwfile.com/_/dr/_raw/20/pg/p0.png" />
         </figure>
         <br />
-        <br />
+
         <p class="title is-5">หัวข้อโปรโมชั่น</p>
         <br />
         <p class="subtitle is-6">
@@ -17,11 +17,8 @@
           กรณีได้รับสินค้าไม่ครบ/ไม่ตรงกับที่สั่งซื้อ หรือ
           ไม่มีชื่อผู้รับตามที่จ่าหน้า ** สอบถามเกี่ยวกับระบบชำระเงิน ** อีเมล
           support@lnwpay.com หรือ โทร. 0818002180 ** สอบถามเกี่ยวกับสินค้า **
-          อีเมล zenshuonline@gmail.com หรือ โทร. 02-294-2327 วันจันทร์ - ศุกร์
-          เวลา 10.00 - 17.00 น.
         </p>
 
-        <br />
         <p class="level-centere">
           <router-link to="/">
             <button

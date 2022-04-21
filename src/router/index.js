@@ -8,6 +8,8 @@ import Cart_Book from '../views/Cart_Book.vue'
 import DetailPromotion from '../views/DetailPromotion.vue'
 import AdminPage from '../views/AdminPage.vue'
 import CheckoutPage from '../views/CheckoutPage.vue'
+import ReadBook from '../views/ReadBook.vue'
+import WriteBook from '../views/WriteBook.vue'
 
 const routes = [
   {
@@ -57,6 +59,17 @@ const routes = [
     name: 'CheckoutPage',
     component: CheckoutPage
   },
+  {
+    path: '/ReadBook',
+    name: 'ReadBook',
+    component: ReadBook
+  },
+  {
+    path: '/WriteBook',
+    name: 'WriteBook',
+    component: WriteBook
+  },
+
 
 ]
 

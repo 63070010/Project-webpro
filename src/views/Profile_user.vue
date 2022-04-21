@@ -68,6 +68,7 @@
               </li>
               <li v-bind:class="{ 'is-active': isActive == 'MYbooksell' }">
                 <a v-on:click="isActive = 'MYbooksell'"
+                  ><span class="icon"> <i class="fa fa-address-book"></i> </span
                   >หนังสือที่ลงขาย/เขียนหนังสือ</a
                 >
               </li>
