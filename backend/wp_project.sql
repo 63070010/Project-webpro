@@ -1,1 +1,0 @@
-SELECT * FROM db_project.cart_item;
