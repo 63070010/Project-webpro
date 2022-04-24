@@ -1,26 +1,28 @@
 <template>
-  <div class="box" v-for="card in Cart_item" v-bind:key="card.id">
-    <article class="media">
-      <div class="media-left">
-        <img :src="card.image" alt="Image" class="image is-128x128" />
-      </div>
-      <div class="media-content" style="margin-left: 900px">
-        <div class="content">
-          <p>
-            <strong>ชื่อหนังสือ: {{ card.Book_name }}</strong>
-            <br />
-            <small>ราคา: {{ card.price }}</small>
-          </p>
+  <div>
+    <div class="box" v-for="card in Cart_item" v-bind:key="card.id">
+      <article class="media">
+        <div class="media-left">
+          <img :src="card.image" alt="Image" class="image is-128x128" />
         </div>
-        <div class="level-right">
-          <a class="level-item">
-            <span class="icon is-small">
-              <i class="fa fa-trash" style="color: #ac3b61"></i>
-            </span>
-          </a>
+        <div class="media-content" style="margin-left: 900px">
+          <div class="content">
+            <p>
+              <strong>ชื่อหนังสือ: {{ card.Book_name }}</strong>
+              <br />
+              <small>ราคา: {{ card.price }}</small>
+            </p>
+          </div>
+          <div class="level-right">
+            <a class="level-item">
+              <span class="icon is-small">
+                <i class="fa fa-trash" style="color: #ac3b61"></i>
+              </span>
+            </a>
+          </div>
         </div>
-      </div>
-    </article>
+      </article>
+    </div>
   </div>
 </template>
 <script>
