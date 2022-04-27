@@ -1,8 +1,8 @@
 -- MySQL dump 10.13  Distrib 8.0.22, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: db_project
+-- Host: localhost    Database: ebook
 -- ------------------------------------------------------
--- Server version	8.0.17
+-- Server version	8.0.22
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `administrator`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `administrator` (
-  `user_id` int(10) NOT NULL,
+  `user_id` int NOT NULL,
   `salary` float(8,2) DEFAULT NULL,
   KEY `user_id_admin_idx` (`user_id`),
   CONSTRAINT `user_id_admin` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
@@ -51,7 +51,8 @@ CREATE TABLE `author` (
   `bank_number` varchar(255) DEFAULT NULL,
   `bank_name` varchar(255) DEFAULT NULL,
   `penname` varchar(255) DEFAULT NULL,
-  `user_id` int(10) NOT NULL,
+  `user_id` int NOT NULL,
+  `Phonenumber` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   CONSTRAINT `user_id_authorr` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -63,7 +64,7 @@ CREATE TABLE `author` (
 
 LOCK TABLES `author` WRITE;
 /*!40000 ALTER TABLE `author` DISABLE KEYS */;
-INSERT INTO `author` VALUES ('57041226410',' Kittipop Pangtrakoon','HachiBank',5),('5704122666','Tetsuya Kuroko','Kurokoshi',6);
+INSERT INTO `author` VALUES ('57041226410',' Kittipop Pangtrakoon','HachiBank',5,'0999728955'),('5704122666','Tetsuya Kuroko','Kurokoshi',6,NULL);
 /*!40000 ALTER TABLE `author` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -75,16 +76,16 @@ DROP TABLE IF EXISTS `book`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `book` (
-  `book_id` int(10) NOT NULL AUTO_INCREMENT,
+  `book_id` int NOT NULL AUTO_INCREMENT,
   `price` float(8,2) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
   `desc` text,
   `type` varchar(255) DEFAULT NULL,
   `publish_date` date DEFAULT NULL,
-  `image` varchar(255) DEFAULT NULL,
+  `image` varchar(255) NOT NULL,
   `status` enum('active','inactive') DEFAULT NULL,
-  `user_id` int(10) NOT NULL,
-  `admin_id` int(10) DEFAULT NULL,
+  `user_id` int NOT NULL,
+  `admin_id` int DEFAULT NULL,
   `bookcontent` text,
   PRIMARY KEY (`book_id`),
   KEY `user_id_owner_book_idx` (`user_id`),
@@ -112,11 +113,11 @@ DROP TABLE IF EXISTS `cart`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cart` (
-  `cart_id` int(10) NOT NULL,
+  `cart_id` int NOT NULL,
   `create_date` date DEFAULT NULL,
   `total_price` float(8,2) DEFAULT NULL,
-  `user_id` int(10) NOT NULL,
-  `promotion_id` int(10) DEFAULT NULL,
+  `user_id` int NOT NULL,
+  `promotion_id` int DEFAULT NULL,
   PRIMARY KEY (`cart_id`),
   KEY `user_id_cart_idx` (`user_id`),
   KEY `promotion_id_cart_idx` (`promotion_id`),
@@ -143,10 +144,10 @@ DROP TABLE IF EXISTS `cart_item`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cart_item` (
-  `item_no` int(10) NOT NULL,
-  `book_id` int(10) NOT NULL,
+  `item_no` int NOT NULL,
+  `book_id` int NOT NULL,
   `price` float(8,2) DEFAULT NULL,
-  `cart_id` int(10) NOT NULL,
+  `cart_id` int NOT NULL,
   PRIMARY KEY (`item_no`,`cart_id`),
   KEY `book_id_cart_item_idx` (`book_id`),
   KEY `cart_id_idx` (`cart_id`),
@@ -173,7 +174,7 @@ DROP TABLE IF EXISTS `customer`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `customer` (
-  `user_id` int(10) NOT NULL,
+  `user_id` int NOT NULL,
   KEY `user_id_idx` (`user_id`),
   CONSTRAINT `user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -197,8 +198,8 @@ DROP TABLE IF EXISTS `order`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `order` (
-  `order_id` int(10) NOT NULL AUTO_INCREMENT,
-  `payment_id` int(10) DEFAULT NULL,
+  `order_id` int NOT NULL AUTO_INCREMENT,
+  `payment_id` int DEFAULT NULL,
   PRIMARY KEY (`order_id`),
   KEY `payment_id_order_idx` (`payment_id`),
   CONSTRAINT `payment_id_order` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`payment_id`)
@@ -222,9 +223,9 @@ DROP TABLE IF EXISTS `payment`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `payment` (
-  `payment_id` int(10) NOT NULL AUTO_INCREMENT,
+  `payment_id` int NOT NULL AUTO_INCREMENT,
   `purchase_date` datetime DEFAULT NULL,
-  `cart_id` int(10) NOT NULL,
+  `cart_id` int NOT NULL,
   PRIMARY KEY (`payment_id`),
   KEY `cart_id_payment_idx` (`cart_id`),
   CONSTRAINT `cart_id_payment` FOREIGN KEY (`cart_id`) REFERENCES `cart` (`cart_id`)
@@ -249,13 +250,12 @@ DROP TABLE IF EXISTS `promotion`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `promotion` (
-  `promotion_id` int(10) NOT NULL,
+  `promotion_id` int NOT NULL,
   `title` varchar(255) DEFAULT NULL,
   `desc` text,
   `expire_date` datetime DEFAULT NULL,
-  `admin_id` int(10) NOT NULL,
-  `promotioncol` varchar(45) DEFAULT NULL,
-  `promotionimage` varchar(45) DEFAULT NULL,
+  `admin_id` int NOT NULL,
+  `promotionimage` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`promotion_id`),
   KEY `admin_id_promo_idx` (`admin_id`),
   CONSTRAINT `admin_id_promo` FOREIGN KEY (`admin_id`) REFERENCES `administrator` (`user_id`)
@@ -268,7 +268,7 @@ CREATE TABLE `promotion` (
 
 LOCK TABLES `promotion` WRITE;
 /*!40000 ALTER TABLE `promotion` DISABLE KEYS */;
-INSERT INTO `promotion` VALUES (1,'ฉลองเปิดใหม่','ลด50%','2022-03-30 11:50:59',7,NULL),(2,'ลดไปเรื่อย','ลด30%','2022-03-30 10:05:59',7,NULL),(3,'ลดกว่านี้ก็แจกฟรีแล้ว','ลด90%','2022-03-05 10:59:00',7,NULL);
+INSERT INTO `promotion` VALUES (1,'ฉลองเปิดใหม่','ลด50%','2022-03-30 11:50:59',7,'https://www.phoenixnext.com/pub/media/wysiwyg/Page/Promotion_Tier_1_800_1_.jpg'),(2,'ลดไปเรื่อย','ลด30%','2022-03-30 10:05:59',7,'https://f.ptcdn.info/017/071/000/qh5opynh6h8AzYa4294-o.jpg'),(3,'ลดกว่านี้ก็แจกฟรีแล้ว','ลด90%','2022-03-05 10:59:00',7,'https://i.pinimg.com/736x/bd/65/33/bd65335955861b33bc9b177faae80905.jpg');
 /*!40000 ALTER TABLE `promotion` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -280,15 +280,16 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
-  `user_id` int(10) NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL AUTO_INCREMENT,
   `fname` varchar(255) DEFAULT NULL,
   `lname` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `sex` enum('Male','Female','Other') DEFAULT NULL,
   `birth_date` date DEFAULT NULL,
-  `age` int(2) DEFAULT NULL,
+  `age` int DEFAULT NULL,
   `user_name` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
+  `imageProflie` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -299,7 +300,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Nottawee','Lamintha','nottawee443@hotmail.com','Male','0000-00-00',22,'notte443','notPassword123'),(2,'Chatchanon','Keawsukkho','63070033@gmail.com','Male','1997-03-24',25,'Minari1997','Jorabador123'),(3,'Ittiporn','Kuljitiwattana','63070190@gmail.com','Male','2001-08-02',21,'IttipornKuljitEiei','Itdiff6969'),(4,'Kaiwin','Naw-in','63070013@gmail.com','Male','2002-03-22',20,'ultraname','ultraPassword555'),(5,'Kittipop','Pangtrakoon','63070010@gmail.com','Male','1992-12-23',30,'BangZaeiei','Mahathep_banker12'),(6,'Tetsuya','Kuroko','kurokolnwza007@gmail.com','Male','1995-10-01',27,'Kuroko007','basket_kuroko'),(7,'Eren','Yeager','ssakeyo223@gmail.com','Male','1995-01-13',27,'eren223','FreedomBehindTheWall223'),(8,'Tangiro','sanmi','Tangiro007@gmail.com','Male','2002-03-15',20,'Tangiro007','Tangiro4321');
+INSERT INTO `user` VALUES (1,'Nottawee','Lamintha','nottawee443@hotmail.com','Male','0000-00-00',22,'notte443','notPassword123',NULL),(2,'Chatchanon','Keawsukkho','63070033@gmail.com','Male','1997-03-24',25,'Minari1997','Jorabador123','https://i.pinimg.com/736x/72/eb/b8/72ebb8fb5ef0dd6db5b24aee26f986d6.jpg'),(3,'Ittiporn','Kuljitiwattana','63070190@gmail.com','Male','2001-08-02',21,'IttipornKuljitEiei','Itdiff6969',NULL),(4,'Kaiwin','Naw-in','63070013@gmail.com','Male','2002-03-22',20,'ultraname','ultraPassword555',NULL),(5,'Kittipop','Pangtrakoon','63070010@gmail.com','Male','1992-12-23',30,'BangZaeiei','Mahathep_banker12',NULL),(6,'Tetsuya','Kuroko','kurokolnwza007@gmail.com','Male','1995-10-01',27,'Kuroko007','basket_kuroko',NULL),(7,'Eren','Yeager','ssakeyo223@gmail.com','Male','1995-01-13',27,'eren223','FreedomBehindTheWall223',NULL),(8,'Tangiro','sanmi','Tangiro007@gmail.com','Male','2002-03-15',20,'Tangiro007','Tangiro4321',NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -312,4 +313,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-23  6:38:56
+-- Dump completed on 2022-04-28  4:10:08
