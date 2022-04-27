@@ -9,36 +9,46 @@
             <div class="columns is-mobile is-multiline">
               <div class="column is-2">
                 <figure class="image is-1by1">
-                  <img
-                    class="is-rounded"
-                    src="https://i.pinimg.com/736x/83/01/1c/83011ceb5ba721bc7e251a763181783e.jpg"
-                  />
+                  <img class="is-rounded" :src="user[0].imageProflie" />
                 </figure>
               </div>
 
               <div class="column is-4-tablet is-10-mobile name">
                 <p>
-                  <span class="title is-bold">{{ user_one[0].user_name }}</span>
+                  <span class="title is-bold">{{ user[0].user_name }}</span>
                 </p>
                 <br />
                 <div class="tagline">
-                  <p>Email: {{ user_one[0].Email }}</p>
+                  <p>Email: {{ user[0].email }}</p>
 
                   <p>
-                    ชื่อจริง: {{ user_one[0].First_Name }}
-                    <span class="ml-4"
-                      >นามสกุล: {{ user_one[0].Last_Name }}
-                    </span>
+                    ชื่อจริง: {{ user[0].fname }}
+                    <span class="ml-4">นามสกุล: {{ user[0].lname }} </span>
                   </p>
 
-                  <p>เพศ: {{ user_one[0].Sex }}</p>
-                  <p>เบอร์โทรสับ: {{ user_one[0].PhoneNumber }}</p>
-                  <p>
-                    ชื่อธนาคาร: {{ user_one[0].BankName }}
-                    <span class="ml-4"
-                      >เลขที่บัญชี: {{ user_one[0].BankNumber }}
+                  <p>เพศ: {{ user[0].sex }}</p>
+                  <p v-if="user[0].penname != null">
+                    นามปากกา: {{ user[0].penname }}
+                    <span class="ml-1" v-if="user[0].Phonenumber != null">
+                      เบอร์โทรสับ: {{ user[0].Phonenumber }}
                     </span>
+                    <span class="ml-1" v-else>เบอร์โทรสับ: ยังไม่มีข้อมูล</span>
                   </p>
+                  <p v-else>
+                    นามปากกา: ยังไม่มีข้อมูล
+                    <span class="ml-1" v-if="user[0].Phonenumber != null">
+                      เบอร์โทรสับ: {{ user[0].Phonenumber }}
+                    </span>
+                    <span class="ml-1" v-else>เบอร์โทรสับ: ยังไม่มีข้อมูล</span>
+                  </p>
+                  <p v-if="user[0].bank_name != null">
+                    ชื่อธนาคาร: {{ user[0].bank_name }}
+                  </p>
+                  <p v-else>ชื่อธนาคาร: ยังไม่มีข้อมูล</p>
+                  <p v-if="user[0].bank_number != null">
+                    เลขที่บัญชี: {{ user[0].bank_number }}
+                  </p>
+                  <p v-else>เลขที่บัญชี: ยังไม่มีข้อมูล</p>
                 </div>
               </div>
 
@@ -108,9 +118,9 @@ import MysellBook from "@/components/MysellBook";
 import NavBar from "@/components/NavBar";
 import AddBookmain from "@/components/AddBookmain";
 import EditProfile from "@/components/EditProfile";
-
+import axios from "axios";
 export default {
-  name: "Profile_Customer",
+  name: "Profile_user",
   components: {
     NavBar,
     MyBook,
@@ -120,21 +130,29 @@ export default {
   },
   data() {
     return {
-      user_one: [
-        {
-          user_name: "Nozomi",
-          First_Name: "ทดสอบชื่อ",
-          Last_Name: "ทดสอบนามสกุล",
-          Email: "Mami@gmail.com",
-          Sex: "ไม่ระบุ",
-          picked: "Customer",
-          PhoneNumber: "0999728955",
-          BankName: "กสิกรไทย",
-          BankNumber: "495-45613",
+      user: {
+        0: {
+          image: "",
         },
-      ],
+      },
       isActive: "MYbook",
     };
+  },
+  mounted() {
+    this.getUser_id(this.$route.params.id);
+  },
+  methods: {
+    async getUser_id(idUser) {
+      await axios
+        .get(`http://localhost:3000/Profile_user/${idUser}`)
+        .then((response) => {
+          this.user = response.data;
+          console.log(this.user);
+        })
+        .catch((error) => {
+          this.error = error.response.data.message;
+        });
+    },
   },
 };
 </script>

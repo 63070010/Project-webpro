@@ -4,48 +4,55 @@ const pool = require("../config");
 
 router = express.Router();
 
-router.post("/blogs/search", async function (req, res, next) {
-  // Your code here
+
+// โปรโมชั่น
+router.get("/promotion_image", async function (req, res, next) {
+  try {
+    const promotion_image = await pool.query("SELECT * FROM promotion");
+    res.send(promotion_image[0])
+  }
+  catch (e) {
+    res.send(e)
+  }
+
+});
+// รายละเอียดโปรโมชั่น
+router.get("/DetailsPromotion/:id", async function (req, res, next) {
+
+  const detailPro = await pool.query("SELECT * FROM promotion WHERE promotion_id=?", [
+    req.params.id,
+
+  ]);
+  res.json(detailPro[0])
 });
 
-router.post("/blogs/addlike/:blogId", async function (req, res, next) {
-  // Your code here
+// ชั้นหนังสือ
+router.get("/myBook/:id", async function (req, res, next) {
+  const mybook = await pool.query("SELECT * FROM book join cart_item  using(book_id) join cart using(cart_id) join payment using(cart_id) join author on(book.user_id = author.user_id) where cart.user_id = ? And cart.cart_id = payment.cart_id", [
+    req.params.id,
+  ]);
+  res.json(mybook[0])
+});
+// ชั้นหนังสือ
+router.get("/MysellBook/:id", async function (req, res, next) {
+  try {
+    const mysell_book = await pool.query("SELECT * FROM author join book on(author.user_id = book.user_id) where author.user_id = ?", [
+      req.params.id,
+    ]);
+    res.json(mysell_book[0])
+  } catch (e) {
+    console.log(e)
+  }
 });
 
-router.post("/blogs", async function (req, res, next) {
-  // Your code here
-});
+// โปรไฟล์
+router.get("/Profile_user/:id", async function (req, res, next) {
 
-router.get("/blogs/:id", function (req, res, next) {
-  const promise1 = pool.query("SELECT * FROM blogs WHERE id=?", [req.params.id]);
-  const promise2 = pool.query("SELECT * FROM comments WHERE blog_id=?", [req.params.id]);
-  const promise3 = pool.query("SELECT * FROM images WHERE blog_id=?", [req.params.id])
+  const myProfile = await pool.query("SELECT * FROM user left outer join author on(user.user_id = author.user_id) where user.user_id = ?", [
+    req.params.id,
 
-  Promise.all([promise1, promise2, promise3])
-    .then((results) => {
-      const blogs = results[0];
-      const comments = results[1];
-      const images = results[2];
-      res.json({
-        blog: blogs[0][0],
-        images: images[0],
-        comments: comments[0],
-        error: null,
-      });
-    })
-    .catch((err) => {
-      return next(err);
-    });
-});
-
-router.put("/blogs/:id", function (req, res) {
-  // Your code here
-  return;
-});
-
-router.delete("/blogs/:id", function (req, res) {
-  // Your code here
-  return;
+  ]);
+  res.json(myProfile[0])
 });
 
 exports.router = router;

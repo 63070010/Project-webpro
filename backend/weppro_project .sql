@@ -255,6 +255,7 @@ CREATE TABLE `promotion` (
   `expire_date` datetime DEFAULT NULL,
   `admin_id` int(10) NOT NULL,
   `promotioncol` varchar(45) DEFAULT NULL,
+  `promotionimage` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`promotion_id`),
   KEY `admin_id_promo_idx` (`admin_id`),
   CONSTRAINT `admin_id_promo` FOREIGN KEY (`admin_id`) REFERENCES `administrator` (`user_id`)

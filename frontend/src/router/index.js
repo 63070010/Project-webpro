@@ -29,7 +29,7 @@ const routes = [
     component: LogIn
   },
   {
-    path: '/Profile_user',
+    path: '/Profile_user/:id',
     name: 'Profile_user',
     component: Profile_user
   },
@@ -44,7 +44,7 @@ const routes = [
     component: Cart_Book
   },
   {
-    path: '/DetailPromotion',
+    path: '/DetailPromotion/:id',
     name: 'DetailPromotion',
     component: DetailPromotion
   }
