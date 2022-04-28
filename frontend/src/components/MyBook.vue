@@ -95,14 +95,14 @@ export default {
     };
   },
   mounted() {
-    this.getpromotionDetail(5);
+    this.Bookshlef(2);
   },
   methods: {
-    async getpromotionDetail(idUser) {
+    async Bookshlef(idUser) {
       await axios
-        .get(`http://localhost:3000/myBook/${idUser}`)
+        .get(`http://localhost:3000/Profile_user/${idUser}`)
         .then((response) => {
-          this.Book_list = response.data;
+          this.Book_list = response.data.book;
         })
         .catch((error) => {
           this.error = error.response.data.message;

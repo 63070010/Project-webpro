@@ -1,7 +1,7 @@
 <template >
   <div class="container is-max-widescreen">
     <div class="box has-text-centered">
-      <a class="button" @click="Add_Book = true">
+      <a class="button" @click="add_BookNew()">
         เขียนหนังสือ เล่มใหม่
         <span class="material-icons">
           <i class="fas fa-pencil-alt ml-3"></i> </span
@@ -14,7 +14,7 @@
         <button
           class="modal-close is-large"
           aria-label="close"
-          @click="Add_Book = false"
+          @click="Add_Book_out()"
         ></button>
 
         <section class="modal-card-body">
@@ -46,11 +46,16 @@
                   <option value="Romance">Romance</option>
                   <option value="Action">Action</option>
                   <option value="Drama">Drama</option>
+                  <option value="Comedy">Comedy</option>
+                  <option value="Fantasy">Fantasy</option>
+                  <option value="Adventure">Adventure</option>
                 </select>
               </div>
             </div>
             <div class="field" style="margin-top: 35px">
-              <button class="button is-success">เพิ่มประเภท</button>
+              <button class="button is-success" @click="type_add()">
+                เพิ่มประเภท
+              </button>
             </div>
             <div class="field">
               <label class="label" style="color: #ac3b61">ราคาหนังสือ</label>
@@ -62,20 +67,28 @@
             </div>
           </div>
           <br />
-          <div class="field">
-            <label class="label" style="color: #ac3b61"
-              >เพิ่มรูปภาพปกหนังสือ</label
-            >
-            <div class="file">
-              <label class="file-label">
-                <input class="file-input" type="file" name="resume" />
-                <span class="file-cta">
-                  <span class="file-icon">
-                    <i class="fas fa-upload"></i>
+          <div class="field-body">
+            <div class="field">
+              <label class="label" style="color: #ac3b61"
+                >เพิ่มรูปภาพปกหนังสือ</label
+              >
+              <div class="file">
+                <label class="file-label">
+                  <input class="file-input" type="file" name="resume" />
+                  <span class="file-cta">
+                    <span class="file-icon">
+                      <i class="fas fa-upload"></i>
+                    </span>
+                    <span class="file-label"> Choose a file… </span>
                   </span>
-                  <span class="file-label"> Choose a file… </span>
-                </span>
-              </label>
+                </label>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label" style="color: #ac3b61"
+                >ประเภทหนังสือที่เลือกไว้</label
+              >
+              {{ Total_type }}
             </div>
           </div>
 
@@ -91,8 +104,10 @@
           </div>
         </section>
         <footer class="modal-card-foot">
-          <button class="button is-success">บักทึก</button>
-          <button class="button" @click="Add_Book = false">ยกเลิก</button>
+          <button class="button is-success" @click="Add_Book_out()">
+            บักทึก
+          </button>
+          <button class="button" @click="Add_Book_out = false">ยกเลิก</button>
         </footer>
       </div>
     </div>
@@ -105,8 +120,34 @@ export default {
     return {
       Add_Book: false,
       Book_name: "",
-      price: "",
+      Book_type: "",
+      Total_type: "",
+      price: 0,
+      detail_book: "",
     };
+  },
+  methods: {
+    add_BookNew() {
+      this.Add_Book = true;
+    },
+
+    type_add() {
+      if (this.Total_type == "") {
+        this.Total_type += this.Book_type;
+      } else if (this.Total_type.includes(this.Book_type)) {
+        alert("้เลือกประเภท นี้แล้ว");
+      } else {
+        this.Total_type += "," + " " + this.Book_type;
+      }
+    },
+    Add_Book_out() {
+      this.Add_Book = false;
+      this.Book_name = "";
+      this.Book_type = "";
+      this.Total_type = "";
+      this.price = 0;
+      this.detail_book = "";
+    },
   },
 };
 </script>

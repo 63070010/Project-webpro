@@ -16,43 +16,42 @@ router.get("/promotion_image", async function (req, res, next) {
   }
 
 });
+
 // รายละเอียดโปรโมชั่น
 router.get("/DetailsPromotion/:id", async function (req, res, next) {
-
   const detailPro = await pool.query("SELECT * FROM promotion WHERE promotion_id=?", [
     req.params.id,
-
   ]);
   res.json(detailPro[0])
 });
 
-// ชั้นหนังสือ
-router.get("/myBook/:id", async function (req, res, next) {
-  const mybook = await pool.query("SELECT * FROM book join cart_item  using(book_id) join cart using(cart_id) join payment using(cart_id) join author on(book.user_id = author.user_id) where cart.user_id = ? And cart.cart_id = payment.cart_id", [
-    req.params.id,
-  ]);
-  res.json(mybook[0])
-});
-// ชั้นหนังสือ
-router.get("/MysellBook/:id", async function (req, res, next) {
-  try {
-    const mysell_book = await pool.query("SELECT * FROM author join book on(author.user_id = book.user_id) where author.user_id = ?", [
-      req.params.id,
-    ]);
-    res.json(mysell_book[0])
-  } catch (e) {
-    console.log(e)
-  }
-});
 
 // โปรไฟล์
 router.get("/Profile_user/:id", async function (req, res, next) {
-
-  const myProfile = await pool.query("SELECT * FROM user left outer join author on(user.user_id = author.user_id) where user.user_id = ?", [
+  const promise1 = await pool.query("SELECT user_name, lname, fname, email, sex, Phonenumber, bank_name, bank_number, imageProflie FROM user left outer join author on(user.user_id = author.user_id) where user.user_id = ?", [
     req.params.id,
-
   ]);
-  res.json(myProfile[0])
-});
+  const promise2 = await pool.query("SELECT * FROM book join cart_item  using(book_id) join cart using(cart_id) join payment using(cart_id) join author on(book.user_id = author.user_id) where cart.user_id = ? And cart.cart_id = payment.cart_id", [
+    req.params.id,
+  ]);
+  const promise3 = await pool.query("SELECT * FROM author join book on(author.user_id = book.user_id) where author.user_id = ?", [
+    req.params.id,
+  ]);
+  Promise.all([promise1, promise2, promise3])
+    .then((results) => {
 
+      const [myProfile, blogFields] = results[0];
+      const [mybook, commentFields] = results[1];
+      const [mysell_book, imageFields] = results[2];
+      res.json({
+        Profile: myProfile[0],
+        book: mybook,
+        sell_book: mysell_book,
+        error: null,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json(err);
+    });
+});
 exports.router = router;

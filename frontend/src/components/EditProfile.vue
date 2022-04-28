@@ -2,7 +2,7 @@
   <!-- display: none; -->
   <div>
     <nav
-      @click="Edit_profile = true"
+      @click="editCheck()"
       class="button is-rounded navbar is-fixed-bottom navbar-end mb-4 mr-4"
       style="width: 120px; height: 55px; background-color: #edc7b7"
     >
@@ -14,7 +14,7 @@
         <button
           class="modal-close is-large"
           aria-label="close"
-          @click="Edit_profile = false"
+          @click="Edit_out()"
         ></button>
 
         <section class="modal-card-body">
@@ -95,29 +95,15 @@
             </div>
           </div>
 
-          <div class="field-body">
-            <div class="field">
-              <div class="control">
-                <label class="label" style="color: #ac3b61">วันเกิด</label>
-                <input
-                  class="input is-medium is-rounded"
-                  type="date"
-                  v-model="Birthday"
-                  style="background-color: #eee2dc"
-                />
-              </div>
-            </div>
+          <div class="field">
+            <label class="label" style="color: #ac3b61">เพศ</label>
 
-            <div class="field">
-              <label class="label" style="color: #ac3b61">เพศ</label>
-
-              <div class="select is-fullwidth is-medium is-rounded">
-                <select v-model="Sex" style="background-color: #eee2dc">
-                  <option value="Male">ชาย</option>
-                  <option value="Famale">หญิง</option>
-                  <option value="not_specified">ไม่ระบุ</option>
-                </select>
-              </div>
+            <div class="select is-fullwidth is-medium is-rounded">
+              <select v-model="Sex" style="background-color: #eee2dc">
+                <option value="Male">ชาย</option>
+                <option value="Famale">หญิง</option>
+                <option value="not_specified">ไม่ระบุ</option>
+              </select>
             </div>
           </div>
 
@@ -157,26 +143,6 @@
           </div>
 
           <div class="field">
-            <label class="label" style="color: #ac3b61">รหัสผ่าน</label>
-            <input
-              class="input is-medium is-rounded"
-              type="text"
-              v-model="Password"
-              style="background-color: #eee2dc"
-            />
-          </div>
-
-          <div class="field">
-            <label class="label" style="color: #ac3b61">ยืนยัน รหัสผ่าน</label>
-            <input
-              class="input is-medium is-rounded"
-              type="text"
-              v-model="Retype_Password"
-              style="background-color: #eee2dc"
-            />
-          </div>
-
-          <div class="field">
             <label class="label" style="color: #123c69"
               >ประเภทที่จะ สมัครสมาชิก</label
             >
@@ -201,26 +167,80 @@
                   value="Author"
                   @click="disabled = false"
                 />
-                นักเขียน
+                เปลี่ยนเป็นนักเขียน
               </label>
             </div>
           </div>
         </section>
         <footer class="modal-card-foot">
-          <button class="button is-success">บักทึก</button>
-          <button class="button" @click="Edit_profile = false">ยกเลิก</button>
+          <button class="button is-success" @click="submit()">บักทึก</button>
+          <button class="button" @click="Edit_out()">ยกเลิก</button>
         </footer>
       </div>
     </div>
   </div>
 </template>
 <script>
+import axios from "axios";
+
 export default {
   name: "EditProfile",
   data() {
     return {
+      disabled: false,
+      picked: "Customer",
       Edit_profile: false,
+      user_name: "",
+      First_Name: "",
+      Last_Name: "",
+      Email: "",
+
+      Sex: "",
+      PhoneNumber: "",
+      BankName: "",
+      BankNumber: "",
     };
+  },
+
+  mounted() {
+    this.getUser_id(this.$route.params.id);
+  },
+  methods: {
+    getUser_id(idUser) {
+      axios
+        .get(`http://localhost:3000/Profile_user/${idUser}`)
+        .then((response) => {
+          this.user = response.data.Profile;
+        })
+        .catch((error) => {
+          this.error = error.response.data.message;
+        });
+    },
+
+    editCheck() {
+      this.Edit_profile = true;
+      this.user_name = this.user.user_name;
+      this.First_Name = this.user.lname;
+      this.Last_Name = this.user.fname;
+      this.Email = this.user.email;
+      this.Sex = this.user.sex;
+      this.PhoneNumber = this.user.Phonenumber;
+      this.BankName = this.user.bank_name;
+      this.BankNumber = this.user.bank_number;
+    },
+    Edit_out() {
+      this.Edit_profile = false;
+    },
+    submit(idUser) {
+      axios
+        .put(`http://localhost:3000/EditProfile/${idUser}`, {})
+        .then(() => {})
+        .catch((err) => {
+          console.log(err);
+        });
+
+      this.Edit_profile = false;
+    },
   },
 };
 </script>
