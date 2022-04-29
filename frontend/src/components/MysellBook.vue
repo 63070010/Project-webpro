@@ -3,21 +3,18 @@
     <div class="container is-max-widescreen hero is-fullheight">
       <div class="columns is-multiline">
         <div
-          v-for="(card, index) in mysell_book"
+          v-for="card in mysell_book"
           v-bind:key="card.id"
           class="column is-3"
         >
           <div class="card large">
-            <div
-              class="card-image image is-4by5"
-              @click="DetailBookread(index)"
-            >
+            <div class="card-image image is-4by5" @click="DetailBook = true">
               <img :src="card.image" alt="Image" />
             </div>
             <div
               class="card-content"
               style="height: 250px"
-              @click="DetailBookread(index)"
+              @click="DetailBook = true"
             >
               <div class="media">
                 <div class="media-content">
@@ -134,14 +131,14 @@ export default {
     };
   },
   mounted() {
-    this.MysellBook(5);
+    this.getpromotionDetail(5);
   },
   methods: {
-    async MysellBook(idUser) {
+    async getpromotionDetail(idUser) {
       await axios
-        .get(`http://localhost:3000/Profile_user/${idUser}`)
+        .get(`http://localhost:3000/MysellBook/${idUser}`)
         .then((response) => {
-          this.mysell_book = response.data.sell_book;
+          this.mysell_book = response.data;
         })
         .catch((error) => {
           this.error = error.response.data.message;

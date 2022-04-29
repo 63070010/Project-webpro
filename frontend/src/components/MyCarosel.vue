@@ -22,7 +22,6 @@
 import { Carousel, Pagination, Slide } from "vue3-carousel";
 import "vue3-carousel/dist/carousel.css";
 import axios from "axios";
-
 export default {
   name: "CaroUse",
   components: {
@@ -45,7 +44,6 @@ export default {
         .then((response) => {
           this.promotion = response.data;
         })
-
         .catch((error) => {
           this.error = error.response.data.message;
         });

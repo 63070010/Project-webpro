@@ -82,7 +82,6 @@
 </template>
 <script>
 import axios from "axios";
-
 export default {
   name: "MyBook",
   data() {
@@ -95,14 +94,14 @@ export default {
     };
   },
   mounted() {
-    this.Bookshlef(2);
+    this.getpromotionDetail(5);
   },
   methods: {
-    async Bookshlef(idUser) {
+    async getpromotionDetail(idUser) {
       await axios
-        .get(`http://localhost:3000/Profile_user/${idUser}`)
+        .get(`http://localhost:3000/myBook/${idUser}`)
         .then((response) => {
-          this.Book_list = response.data.book;
+          this.Book_list = response.data;
         })
         .catch((error) => {
           this.error = error.response.data.message;
