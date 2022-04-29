@@ -16,7 +16,7 @@ router.get("/", async function (req, res, next) {
     const [rows, fields] = await pool.query(sql, cond);
     return res.json(rows);
   } catch (err) {
-    return res.status(500).json(err)
+    return next(err)
   }
 });
 exports.router = router;
