@@ -22,18 +22,18 @@
           <div class="is-multiline columns is-variable is-2">
             <div
               class="column is-one-quarter"
-              v-for="(value, index) in books"
+              v-for="value in books"
               :key="value.id"
             >
               <div class="card">
-                <router-link to="/DetailsBook">
+                <router-link :to="`/DetailsBook/${value.id}`">
                   <div class="card-image">
                     <figure class="image is-1by1">
                       <img :src="value.image" alt="Placeholder image" />
                     </figure>
                   </div>
 
-                  <div class="card-content" style="height: 160px">
+                  <div class="card-content" style="height: 180px">
                     <div class="media">
                       <div class="media-content" style="color: #edc7b7">
                         <p
@@ -42,19 +42,17 @@
                         >
                           {{ value.title }}
                         </p>
-
                         <p class="is-size-7" style="color: #bab2b5">
                           By {{ value.penname }}
                         </p>
                         type:
-
                         <span
                           class="is-size-7 text-right"
                           style="color: #bab2b5"
                           v-for="(value, index) in value.type"
                           :key="index"
                         >
-                          {{ value }} &nbsp;
+                          {{ value }}
                         </span>
                       </div>
                     </div>
@@ -63,8 +61,12 @@
                 <div class="level ml-2">
                   ฿ {{ value.price }}
                   <button
+                    v-if="
+                      this.totalBook.find((x) => x.book_id == value.id) ===
+                      undefined
+                    "
                     class="button is-ghost level-right"
-                    @click="cardpush(index)"
+                    @click="cardpush(value)"
                   >
                     <i
                       class="fa fa-cart-plus is-size-4"
@@ -72,6 +74,9 @@
                       aria-hidden="true"
                     ></i>
                   </button>
+                  <span v-else class="mt-4 mr-2" style="color: #edc7b7"
+                    >มีหนังสือเล่มนี้แล้ว</span
+                  >
                 </div>
               </div>
             </div>
@@ -98,10 +103,10 @@ import { defineComponent } from "vue";
 import NavBar from "@/components/NavBar";
 import MyCarosel from "@/components/MyCarosel";
 import WarnPay from "@/components/WarnPay";
-import axios from '@/plugins/axios'
+import axios from "@/plugins/axios";
 export default defineComponent({
   name: "HomeView",
-  props: ['user'],
+  props: ["user"],
   components: {
     NavBar,
     MyCarosel,
@@ -112,14 +117,23 @@ export default defineComponent({
       showdetailbook: false,
       book_numdetail: 0,
       books: [],
-      search: ""
+      search: "",
+      cart: {},
+      cart_item: [],
+      pay: {},
+      mybook: [],
+      totalBook: [],
     };
-  },mounted() {
-    this.getBooks();
+  },
+  async mounted() {
+    await this.getBooks();
+    await this.getcheck(4);
+    console.log(this.cart_item);
+    this.totalBook = [...this.cart_item, ...this.mybook];
   },
   methods: {
-    getBooks() {
-      axios
+    async getBooks() {
+      await axios
         .get("http://localhost:3000", {
           params: {
             search: this.search,
@@ -127,8 +141,55 @@ export default defineComponent({
         })
         .then((response) => {
           this.books = response.data;
-          console.log(response.data)
-          
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    async getcheck(idUser) {
+      await axios
+        .get(`http://localhost:3000/cart_check/${idUser}`)
+        .then((response) => {
+          this.cart = response.data.cart;
+          this.pay = response.data.payment;
+          this.mybook = response.data.mybook;
+          console.log(this.mybook);
+          if (this.cart.length == 0 || this.cart.length == this.pay.length) {
+            axios
+              .post(`http://localhost:3000/addcart/${idUser}`)
+              .then((response) => {
+                this.cart.push(response.data);
+              })
+              .catch((error) => {
+                this.error = error.response.data.message;
+              });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      await axios
+        .get(
+          `http://localhost:3000/cartitem/${
+            this.cart[this.cart.length - 1].cart_id
+          }`
+        )
+        .then((response) => {
+          this.cart_item = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    cardpush(book) {
+      axios
+        .post(`http://localhost:3000/addbook/${book.id}`, {
+          cart_id: this.cart[this.cart.length - 1].cart_id,
+          price: book.price,
+        })
+        .then((response) => {
+          this.totalBook = [...this.totalBook, response.data[0]];
+          this.cart_item = [...this.cart_item, response.data[0]];
         })
         .catch((err) => {
           console.log(err);

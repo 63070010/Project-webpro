@@ -7,22 +7,13 @@
           <div class="columns is-vcentered">
             <div class="column is-5">
               <figure class="image is-1by1">
-                <img
-                  src="https://www.osemocphoto.com/collectManga/10768/10768_cover.jpg?1"
-                />
+                <img src="" />
               </figure>
             </div>
             <div class="column is-6 is-offset-1">
-              <p class="title is-3">
-                Exorcist wa Otosenai (เอ็กซอร์ซิสต์ไม่อาจร่วงหล่น)
-              </p>
+              <p class="title is-3">{{}}</p>
               <br />
-              <p class="subtitle is-5">
-                เรื่องย่อ:
-                เด็กหนุ่มผู้ถูกรับเลือกจากพระเจ้าให้กลายเป็นเอ็กซอร์ซิสผู้แข็งแกร่งที่สุดซึ่งมีหน้าที่ในการปราบจอมมาร
-                ได้พบเจอกับเด็กสาวผู้หนึ่ง
-                จนเกิดเป็นเรื่องราวแห่งความรักและความหวัง
-              </p>
+              <p class="subtitle is-5"></p>
               <p class="subtitle is-6">เขียนโดย : 有馬あるま</p>
               <p class="subtitle is-6">ประเภท : Romance, Action</p>
               <p class="subtitle is-6">วันที่วางขาย : 1/01/2020</p>
@@ -43,11 +34,35 @@
 </template>
 <script>
 import NavBar from "@/components/NavBar";
+import axios from "axios";
 
 export default {
   name: "DetailsBook",
   components: {
     NavBar,
+  },
+  date() {
+    return {
+      bookdeteail: {
+        0: {},
+      },
+    };
+  },
+  mounted() {
+    this.getdetailsBook(this.$route.params.id);
+  },
+  methods: {
+    async getdetailsBook(bookid) {
+      await axios
+        .get(`http://localhost:3000/DetailsBook/${bookid}`)
+        .then((response) => {
+          this.bookdeteail = response.data;
+          console.log(this.bookdeteail[0].title);
+        })
+        .catch((error) => {
+          this.error = error.response.data.message;
+        });
+    },
   },
 };
 </script>
