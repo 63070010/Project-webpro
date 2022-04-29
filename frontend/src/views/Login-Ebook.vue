@@ -38,7 +38,7 @@
                       class="input is-medium is-rounded"
                       type="text"
                       style="background-color: #eee2dc"
-                      v-model="user_name"
+                      v-model="username"
                     />
                     <span class="icon is-small is-left">
                       <i class="fas fa-user"></i>
@@ -51,7 +51,7 @@
                   <input
                     class="input is-medium is-rounded"
                     type="text"
-                    v-model="Password"
+                    v-model="password"
                     style="background-color: #eee2dc"
                   />
                 </div>
@@ -80,6 +80,7 @@
                 <div class="field column">
                   <div class="control">
                     <button
+                    @click="submit"
                       class="button"
                       style="color: #eee2dc; background-color: #ac3b61"
                     >
@@ -97,7 +98,7 @@
 </template>
 <script>
 import NavBar from "@/components/NavBar";
-
+import axios from '@/plugins/axios'
 export default {
   name: "Register-Ebook",
   components: {
@@ -105,11 +106,32 @@ export default {
   },
   data() {
     return {
-      user_name: "",
-      Password: "",
+      username: "",
+      password: "",
+      error: '',
       picked: "Customer",
     };
   },
+  methods: {
+     submit () {
+       const data = {
+         username: this.username,
+         password: this.password
+       }
+ 
+       axios.post('http://localhost:3000/user/login/', data)
+         .then(res => {
+           const token = res.data.token                                
+           localStorage.setItem('token', token)
+           this.$emit('auth-change')
+           this.$router.push({path: '/'})
+         })
+         .catch(error => {
+           this.error = error.response.data
+           console.log(error.response.data)
+         })
+     }
+   }
 };
 </script>
 <style lang="">

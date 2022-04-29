@@ -9,44 +9,44 @@
             <div class="columns is-mobile is-multiline">
               <div class="column is-2">
                 <figure class="image is-1by1">
-                  <img class="is-rounded" :src="user.imageProflie" />
+                  <img class="is-rounded" :src="user[0].imageProflie" />
                 </figure>
               </div>
 
               <div class="column is-4-tablet is-10-mobile name">
                 <p>
-                  <span class="title is-bold">{{ user.user_name }}</span>
+                  <span class="title is-bold">{{ user[0].user_name }}</span>
                 </p>
                 <br />
                 <div class="tagline">
-                  <p>Email: {{ user.email }}</p>
+                  <p>Email: {{ user[0].email }}</p>
 
                   <p>
-                    ชื่อจริง: {{ user.fname }}
-                    <span class="ml-4">นามสกุล: {{ user.lname }} </span>
+                    ชื่อจริง: {{ user[0].first_name }}
+                    <span class="ml-4">นามสกุล: {{ user[0].last_name }} </span>
                   </p>
 
-                  <p>เพศ: {{ user.sex }}</p>
-                  <p v-if="user.penname != null">
-                    นามปากกา: {{ user.penname }}
-                    <span class="ml-1" v-if="user.Phonenumber != null">
-                      เบอร์โทรสับ: {{ user.Phonenumber }}
+                  <p>เพศ: {{ user[0].sex }}</p>
+                  <p v-if="user[0].penname != null">
+                    นามปากกา: {{ user[0].penname }}
+                    <span class="ml-1" v-if="user[0].Phonenumber != null">
+                      เบอร์โทรสับ: {{ user[0].Phonenumber }}
                     </span>
                     <span class="ml-1" v-else>เบอร์โทรสับ: ยังไม่มีข้อมูล</span>
                   </p>
                   <p v-else>
                     นามปากกา: ยังไม่มีข้อมูล
-                    <span class="ml-1" v-if="user.Phonenumber != null">
-                      เบอร์โทรสับ: {{ user.Phonenumber }}
+                    <span class="ml-1" v-if="user[0].Phonenumber != null">
+                      เบอร์โทรสับ: {{ user[0].Phonenumber }}
                     </span>
                     <span class="ml-1" v-else>เบอร์โทรสับ: ยังไม่มีข้อมูล</span>
                   </p>
-                  <p v-if="user.bank_name != null">
-                    ชื่อธนาคาร: {{ user.bank_name }}
+                  <p v-if="user[0].bank_name != null">
+                    ชื่อธนาคาร: {{ user[0].bank_name }}
                   </p>
                   <p v-else>ชื่อธนาคาร: ยังไม่มีข้อมูล</p>
-                  <p v-if="user.bank_number != null">
-                    เลขที่บัญชี: {{ user.bank_number }}
+                  <p v-if="user[0].bank_number != null">
+                    เลขที่บัญชี: {{ user[0].bank_number }}
                   </p>
                   <p v-else>เลขที่บัญชี: ยังไม่มีข้อมูล</p>
                 </div>
@@ -55,14 +55,14 @@
               <div
                 class="column is-3-tablet is-4-mobile has-text-centered ml-6"
               >
-                <p class="stat-val">{{ booknumberhave.length }}</p>
+                <p class="stat-val">15</p>
                 <p class="stat-key">หนังสือในชั้นหนังสือ</p>
               </div>
               <div
                 class="column is-2-tablet is-4-mobile has-text-centered ml-3"
                 style="border-left: 2px dotted rgba(0, 0, 0, 0.2)"
               >
-                <p class="stat-val">{{ booknumbersell.length }}</p>
+                <p class="stat-val">5</p>
                 <p class="stat-key">หนังสือที่ลงขาย</p>
               </div>
             </div>
@@ -131,10 +131,10 @@ export default {
   data() {
     return {
       user: {
-        0: {},
+        0: {
+          image: "",
+        },
       },
-      booknumberhave: {},
-      booknumbersell: {},
       isActive: "MYbook",
     };
   },
@@ -146,9 +146,8 @@ export default {
       await axios
         .get(`http://localhost:3000/Profile_user/${idUser}`)
         .then((response) => {
-          this.user = response.data.Profile;
-          this.booknumberhave = response.data.book;
-          this.booknumbersell = response.data.sell_book;
+          this.user = response.data;
+          console.log(this.user);
         })
         .catch((error) => {
           this.error = error.response.data.message;
@@ -163,12 +162,10 @@ export default {
   padding-top: 20px;
   font-weight: bold;
 }
-
 .stat-key {
   font-size: 1.4em;
   font-weight: 200;
 }
-
 .tab-contents .content {
   display: none;
 }
