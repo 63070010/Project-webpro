@@ -9,44 +9,44 @@
             <div class="columns is-mobile is-multiline">
               <div class="column is-2">
                 <figure class="image is-1by1">
-                  <img class="is-rounded" :src="user[0].imageProflie" />
+                  <img class="is-rounded" :src="user.imageProflie" />
                 </figure>
               </div>
 
               <div class="column is-4-tablet is-10-mobile name">
                 <p>
-                  <span class="title is-bold">{{ user[0].user_name }}</span>
+                  <span class="title is-bold">{{ user.user_name }}</span>
                 </p>
                 <br />
                 <div class="tagline">
-                  <p>Email: {{ user[0].email }}</p>
+                  <p>Email: {{ user.email }}</p>
 
                   <p>
-                    ชื่อจริง: {{ user[0].first_name }}
-                    <span class="ml-4">นามสกุล: {{ user[0].last_name }} </span>
+                    ชื่อจริง: {{ user.first_name }}
+                    <span class="ml-4">นามสกุล: {{ user.last_name }} </span>
                   </p>
 
-                  <p>เพศ: {{ user[0].sex }}</p>
-                  <p v-if="user[0].penname != null">
-                    นามปากกา: {{ user[0].penname }}
-                    <span class="ml-1" v-if="user[0].Phonenumber != null">
-                      เบอร์โทรสับ: {{ user[0].Phonenumber }}
+                  <p>เพศ: {{ user.sex }}</p>
+                  <p v-if="user.penname != null">
+                    นามปากกา: {{ user.penname }}
+                    <span class="ml-1" v-if="user.Phonenumber != null">
+                      เบอร์โทรสับ: {{ user.Phonenumber }}
                     </span>
                     <span class="ml-1" v-else>เบอร์โทรสับ: ยังไม่มีข้อมูล</span>
                   </p>
                   <p v-else>
                     นามปากกา: ยังไม่มีข้อมูล
-                    <span class="ml-1" v-if="user[0].Phonenumber != null">
-                      เบอร์โทรสับ: {{ user[0].Phonenumber }}
+                    <span class="ml-1" v-if="user.Phonenumber != null">
+                      เบอร์โทรสับ: {{ user.Phonenumber }}
                     </span>
                     <span class="ml-1" v-else>เบอร์โทรสับ: ยังไม่มีข้อมูล</span>
                   </p>
-                  <p v-if="user[0].bank_name != null">
-                    ชื่อธนาคาร: {{ user[0].bank_name }}
+                  <p v-if="user.bank_name != null">
+                    ชื่อธนาคาร: {{ user.bank_name }}
                   </p>
                   <p v-else>ชื่อธนาคาร: ยังไม่มีข้อมูล</p>
-                  <p v-if="user[0].bank_number != null">
-                    เลขที่บัญชี: {{ user[0].bank_number }}
+                  <p v-if="user.bank_number != null">
+                    เลขที่บัญชี: {{ user.bank_number }}
                   </p>
                   <p v-else>เลขที่บัญชี: ยังไม่มีข้อมูล</p>
                 </div>
@@ -118,9 +118,10 @@ import MysellBook from "@/components/MysellBook";
 import NavBar from "@/components/NavBar";
 import AddBookmain from "@/components/AddBookmain";
 import EditProfile from "@/components/EditProfile";
-import axios from "axios";
+import axios from '@/plugins/axios'
 export default {
   name: "Profile_user",
+  props: ['user1'],
   components: {
     NavBar,
     MyBook,
@@ -130,11 +131,7 @@ export default {
   },
   data() {
     return {
-      user: {
-        0: {
-          image: "",
-        },
-      },
+      user: {},
       isActive: "MYbook",
     };
   },

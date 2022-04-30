@@ -106,7 +106,7 @@ import WarnPay from "@/components/WarnPay";
 import axios from "@/plugins/axios";
 export default defineComponent({
   name: "HomeView",
-  props: ["user"],
+  props: ['user'],
   components: {
     NavBar,
     MyCarosel,
@@ -127,8 +127,7 @@ export default defineComponent({
   },
   async mounted() {
     await this.getBooks();
-    await this.getcheck(4);
-    console.log(this.cart_item);
+    await this.getcheck();
     this.totalBook = [...this.cart_item, ...this.mybook];
   },
   methods: {
@@ -146,9 +145,10 @@ export default defineComponent({
           console.log(err);
         });
     },
-    async getcheck(idUser) {
+    async getcheck() {
+      
       await axios
-        .get(`http://localhost:3000/cart_check/${idUser}`)
+        .get(`http://localhost:3000/cart_check`)
         .then((response) => {
           this.cart = response.data.cart;
           this.pay = response.data.payment;
@@ -156,7 +156,7 @@ export default defineComponent({
           console.log(this.mybook);
           if (this.cart.length == 0 || this.cart.length == this.pay.length) {
             axios
-              .post(`http://localhost:3000/addcart/${idUser}`)
+              .post(`http://localhost:3000/addcart`)
               .then((response) => {
                 this.cart.push(response.data);
               })
