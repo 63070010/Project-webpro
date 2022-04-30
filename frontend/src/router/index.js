@@ -20,53 +20,62 @@ const routes = [
   {
     path: '/register',
     name: 'register',
+    meta: { guess: true },
     component: RegiSter
   }
   ,
   {
     path: '/login',
     name: 'login',
+    meta: { guess: true },
     component: LogIn
   },
   {
     path: '/Profile_user/:id',
     name: 'Profile_user',
+    meta: { login: true },
     component: Profile_user
   },
   {
-    path: '/DetailsBook/:id',
+    path: '/DetailsBook',
     name: 'DetailsBook',
     component: DetailsBook
   },
   {
     path: '/Cart_Book',
     name: 'Cart_Book',
+    meta: { login: true },
     component: Cart_Book
   },
   {
     path: '/DetailPromotion/:id',
     name: 'DetailPromotion',
+    
     component: DetailPromotion
   }
   ,
   {
     path: '/AdminPage',
     name: 'AdminPage',
+    meta: { login: true },
     component: AdminPage
   },
   {
     path: '/CheckoutPage',
     name: 'CheckoutPage',
+    meta: { login: true },
     component: CheckoutPage
   },
   {
     path: '/ReadBook',
     name: 'ReadBook',
+    meta: { login: true },
     component: ReadBook
   },
   {
     path: '/WriteBook',
     name: 'WriteBook',
+    meta: { login: true },
     component: WriteBook
   },
 
@@ -76,6 +85,22 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = !!localStorage.getItem('token')
+
+  if (to.meta.login && !isLoggedIn) {
+    alert('Please login first!')
+    next({ path: '/user/login' })
+  }
+
+  if (to.meta.guess && isLoggedIn) {
+    alert("You've already logged in")
+    next({ path: '/'})
+  }
+
+  next()
 })
 
 export default router
