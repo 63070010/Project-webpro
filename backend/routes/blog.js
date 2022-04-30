@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path")
 const pool = require("../config");
-
+const { isLoggedIn } = require('../middlewares')
 router = express.Router();
 
 
@@ -27,54 +27,28 @@ router.get("/DetailsPromotion/:id", async function (req, res, next) {
 
 
 // โปรไฟล์
-router.get("/Profile_user/:id", async function (req, res, next) {
-  const promise1 = await pool.query("SELECT user_name, lname, fname, email, sex, Phonenumber, bank_name, bank_number, imageProflie FROM user left outer join author on(user.user_id = author.user_id) where user.user_id = ?", [
-    req.params.id,
-  ]);
-  const promise2 = await pool.query("SELECT * FROM book join cart_item  using(book_id) join cart using(cart_id) join payment using(cart_id) join author on(book.user_id = author.user_id) where cart.user_id = ? And cart.cart_id = payment.cart_id", [
-    req.params.id,
-  ]);
-  const promise3 = await pool.query("SELECT * FROM author join book on(author.user_id = book.user_id) where author.user_id = ?", [
-    req.params.id,
-  ]);
-  Promise.all([promise1, promise2, promise3])
-    .then((results) => {
-
-      const [myProfile, blogFields] = results[0];
-      const [mybook, commentFields] = results[1];
-      const [mysell_book, imageFields] = results[2];
-      res.json({
-        Profile: myProfile[0],
-        book: mybook,
-        sell_book: mysell_book,
-        error: null,
-      });
-    })
-    .catch((err) => {
-      return res.status(500).json(err);
-    });
-});
 
 
 
 
 // เช็คตะกร้า
 
-router.get("/cart_check/:id", async function (req, res, next) {
+router.get("/cart_check",isLoggedIn, async function (req, res, next) {
   const promise4 = await pool.query("SELECT * FROM cart where user_id = ?", [
-    req.params.id,
+    req.user.id,
   ]);
   const promise6 = await pool.query("SELECT * FROM cart join payment using(cart_id) where user_id = ?", [
-    req.params.id,
+    req.user.id,
   ]);
   const promise7 = await pool.query("SELECT * FROM book join cart_item  on(book.id = cart_item.book_id) join cart using(cart_id) join payment using(cart_id) join author on(book.user_id = author.user_id) where cart.user_id = ? And cart.cart_id = payment.cart_id", [
-    req.params.id,
+    req.user.id,
   ]);
   Promise.all([promise4, promise6, promise7])
     .then((results) => {
       const [cart, imageFields] = results[0];
       const [payment, commentFields] = results[1];
       const [mybook, c] = results[2];
+      console.log(results[2])
       res.json({
         cart: cart,
         payment: payment,
