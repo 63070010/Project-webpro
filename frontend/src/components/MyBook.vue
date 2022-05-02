@@ -94,12 +94,12 @@ export default {
     };
   },
   mounted() {
-    this.getpromotionDetail(5);
+    this.getpromotionDetail();
   },
   methods: {
-    async getpromotionDetail(idUser) {
+    async getpromotionDetail() {
       await axios
-        .get(`http://localhost:3000/myBook/${idUser}`)
+        .get(`http://localhost:3000/myBook`)
         .then((response) => {
           this.Book_list = response.data;
         })

@@ -47,6 +47,7 @@ export default {
         .catch((error) => {
           this.error = error.response.data.message;
         });
+      console.log(this.promotion);
     },
   },
 };

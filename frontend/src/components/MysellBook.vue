@@ -131,7 +131,7 @@ export default {
     };
   },
   mounted() {
-    this.getpromotionDetail(5);
+    this.getpromotionDetail(4);
   },
   methods: {
     async getpromotionDetail(idUser) {

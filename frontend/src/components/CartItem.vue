@@ -39,7 +39,7 @@ export default {
           is_favorite: false,
           Book_type: ["comedy", "Romance"],
           image:
-            "https://www.memuplay.com/blog/wp-content/uploads/2021/02/Blue-Archive-image.png",
+            "https://www.osemocphoto.com/collectManga/10768/10768_cover.jpg?1",
           detail_book:
             " เด็กหนุ่มผู้ถูกรับเลือกจากพระเจ้าให้กลายเป็นเอ็กซอร์ซิสผู้แข็งแกร่งที่สุดซึ่งมีหน้าที่ในการปราบจอมมาร ได้พบเจอกับเด็กสาวผู้หนึ่ง จนเกิดเป็นเรื่องราวแห่งความรักและความหวัง ",
         },
@@ -51,7 +51,7 @@ export default {
           is_favorite: false,
           Book_type: ["comedy", "Romance"],
           image:
-            "https://s3.ap-southeast-1.amazonaws.com/media.fictionlog/books/6180e02cfe7fc6001c6aa377/6180e3deW0XxPAGh.jpeg",
+            "https://www.storytel.com/images/640x640/0000031877.jpg",
           detail_book:
             " เด็กหนุ่มผู้ถูกรับเลือกจากพระเจ้าให้กลายเป็นเอ็กซอร์ซิสผู้แข็งแกร่งที่สุดซึ่งมีหน้าที่ในการปราบจอมมาร ได้พบเจอกับเด็กสาวผู้หนึ่ง จนเกิดเป็นเรื่องราวแห่งความรักและความหวัง ",
         },
