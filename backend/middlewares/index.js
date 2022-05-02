@@ -27,10 +27,13 @@ async function isLoggedIn(req, res, next) {
 
     // Set user
     const [users] = await pool.query(
-        'SELECT id, username, first_name, last_name, email, sex, birth_date, age ' +
-        'FROM users WHERE id = ?', [token.user_id]
+        'SELECT users.id, users.username, users.first_name, users.last_name, users.email, users.sex, users.birth_date, users.age, users.imageProfile, administrator.id as adminId FROM users left outer join administrator on (users.id = administrator.user_id)' +
+        'WHERE users.id = ?', [token.user_id]
+        
     )
+    
     req.user = users[0]
+    console.log(req.user.user_id)
 
     next()
 }
