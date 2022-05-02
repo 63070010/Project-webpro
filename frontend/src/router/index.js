@@ -37,7 +37,7 @@ const routes = [
     component: Profile_user
   },
   {
-    path: '/DetailsBook',
+    path: '/DetailsBook/:id',
     name: 'DetailsBook',
     component: DetailsBook
   },
