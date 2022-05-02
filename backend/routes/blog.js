@@ -27,7 +27,25 @@ router.get("/DetailsPromotion/:id", async function (req, res, next) {
 
 
 // โปรไฟล์
+router.get("/myBook",isLoggedIn, async function (req, res, next) {
 
+  const promise7 = await pool.query("SELECT * FROM book join cart_item  on(book.id = cart_item.book_id) join cart using(cart_id) join payment using(cart_id) join author on(book.user_id = author.user_id) where cart.user_id = ? And cart.cart_id = payment.cart_id", [
+    req.user.id,
+  ]);
+  Promise.all([ promise7])
+    .then((results) => {
+
+      const [mybook, c] = results[2];
+      console.log(mybook[0])
+      res.json({
+        mybook: mybook[0],
+        error: null,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json(err);
+    });
+});
 
 
 
@@ -61,12 +79,15 @@ router.get("/cart_check",isLoggedIn, async function (req, res, next) {
     });
 });
 // cartitem
-router.get("/cartitem/:id", async function (req, res, next) {
-  const cartitem = await pool.query("SELECT item_no, book_id, price, cart_id FROM ebook.cart_item join ebook.cart using(cart_id) where cart_id = ?;", [
-    req.params.id,
-  ]);
-  res.json(cartitem[0])
-});
+//router.get("/getCartItem", isLoggedIn, async function (req, res, next) {
+ // let sql = await pool.query("SELECT item_no, book_id, price, cart_id FROM ebook.cart_item join ebook.cart using(cart_id) where cart_id = ?;", [
+ //   req.user.id,
+ // ]);
+ // 
+//  const [rows, fields] = await pool.query(sql);
+ // return res.json(rows);
+ // 
+//});
 
 // หนังสือ
 router.get("/DetailsBook/:id", async function (req, res, next) {

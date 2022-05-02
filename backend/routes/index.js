@@ -10,7 +10,7 @@ router.get("/", async function (req, res, next) {
     let cond = []
 
     if (search.length > 0) {
-      sql = 'SELECT a.*, b.file_path FROM book AS a LEFT JOIN (SELECT * FROM images WHERE cover=1) AS b ON a.id = b.book_id LEFT JOIN (SELECT * FROM author) AS c on a.user_id = c.user_id WHERE a.title LIKE ? OR a.content LIKE ? ;'
+      sql = 'SELECT a.*, b.file_path, c.penname FROM book AS a LEFT JOIN (SELECT * FROM images WHERE cover=1) AS b ON a.id = b.book_id LEFT JOIN (SELECT * FROM author) AS c on a.user_id = c.user_id WHERE a.title LIKE ? OR a.desc LIKE ? ;'
       cond = [`%${search}%`, `%${search}%`]
     }
     const [rows, fields] = await pool.query(sql, cond);

@@ -68,6 +68,7 @@ router.post('/user/signup', async (req, res, next) => {
 });
 router.get('/user/me', isLoggedIn, async (req, res, next) => {
     // req.user ถูก save ข้อมูล user จาก database ใน middleware function "isLoggedIn"
+    console.log(req.user.username)
     res.json(req.user)
 });
 
@@ -133,23 +134,20 @@ router.post('/user/login', async (req, res, next) => {
 })
 
 router.get('/Profile_user/:id', isLoggedIn, async (req, res, next) => {
-    const promise1 = pool.query("SELECT * FROM users WHERE id=?", [
-        req.params.id,
-      ]);
+    console.log(req.user.username)
+    res.json(req.user)
+});
 
-    
-      // Use Promise.all() to make sure that all queries are successful
-      Promise.all([promise1])
-        .then((results) => {
-          const [users, usersFields] = results[0];
+router.get("/adminPage", async function (req, res, next) {
+    try {
+        const search = req.query.search || ''
+        let sql = 'SELECT a.*, b.file_path, c.penname FROM book AS a LEFT JOIN (SELECT * FROM images WHERE cover=1) AS b ON a.id = b.book_id LEFT JOIN (SELECT * FROM author ) AS c on a.user_id = c.user_id WHERE a.status = "wait";'
+        let cond = []
 
-          res.json({
-            user: users[0],
-            error: null,
-          });
-        })
-        .catch((err) => {
-          return res.status(500).json(err);
-        });
+        const [rows, fields] = await pool.query(sql, cond);
+        return res.json(rows);
+    } catch (err) {
+        return next(err)
+    }
 });
 exports.router = router
