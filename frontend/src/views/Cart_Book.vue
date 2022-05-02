@@ -47,12 +47,38 @@
 <script>
 import NavBar from "@/components/NavBar";
 import CartItem from "@/components/CartItem";
+import axios from "@/plugins/axios";
 export default {
   name: "Cart_Book",
   components: {
     NavBar,
     CartItem,
   },
+  data() {
+    return {
+      items: []
+    }
+  },
+  async mounted() {
+    await this.getItems();
+    
+  },
+  methods: {
+    async getItems() {
+      await axios
+        .get("http://localhost:3000/getCartItem", {
+          params: {
+            search: this.search,
+          },
+        })
+        .then((response) => {
+          this.books = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  }
 };
 </script>
 <style >

@@ -101,6 +101,7 @@ import NavBar from "@/components/NavBar";
 import axios from '@/plugins/axios'
 export default {
   name: "Register-Ebook",
+  props: ['user'],
   components: {
     NavBar,
   },
@@ -124,7 +125,8 @@ export default {
            const token = res.data.token                                
            localStorage.setItem('token', token)
            this.$emit('auth-change')
-           this.$router.push({path: '/'})
+           this.$router.push({path: '/adminPage'})
+           
          })
          .catch(error => {
            this.error = error.response.data

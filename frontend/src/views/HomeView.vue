@@ -2,7 +2,11 @@
   <div>
     <NavBar />
     <MyCarosel />
+
     <WarnPay />
+    <div class="columns">
+     
+    </div>
     <div class="columns">
       <div class="column mt-4">
         <section class="section">
@@ -17,7 +21,17 @@
             </div>
           </h1>
         </section>
-
+ <div class="column is-half">
+        <input
+          class="input"
+          type="text"
+          v-model="search"
+          placeholder="Search blog(s)"
+        />
+      </div>
+      <div class="column is-half">
+        <button @click="getBooks" class="button">Search</button>
+      </div>
         <div class="container is-max-desktop">
           <div class="is-multiline columns is-variable is-2">
             <div
@@ -106,7 +120,7 @@ import WarnPay from "@/components/WarnPay";
 import axios from "@/plugins/axios";
 export default defineComponent({
   name: "HomeView",
-  props: ['user'],
+  props: ["user"],
   components: {
     NavBar,
     MyCarosel,
@@ -126,7 +140,7 @@ export default defineComponent({
     };
   },
   async mounted() {
-    await this.getBooks();
+    await this.getBooks(4);
     await this.getcheck();
     this.totalBook = [...this.cart_item, ...this.mybook];
   },
@@ -146,7 +160,6 @@ export default defineComponent({
         });
     },
     async getcheck() {
-      
       await axios
         .get(`http://localhost:3000/cart_check`)
         .then((response) => {

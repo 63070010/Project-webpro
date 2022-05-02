@@ -9,7 +9,7 @@
             <div class="columns is-mobile is-multiline">
               <div class="column is-2">
                 <figure class="image is-1by1">
-                  <img class="is-rounded" :src="user.imageProflie" />
+                  <img class="is-rounded" :src="`${user.imageProfile}`" />
                 </figure>
               </div>
 
@@ -131,7 +131,7 @@ export default {
   },
   data() {
     return {
-      user: {},
+      user: [],
       isActive: "MYbook",
     };
   },

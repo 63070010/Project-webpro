@@ -8,25 +8,29 @@
             <div class="column is-5">
               <figure class="image is-1by1">
                 <img
-                  src="https://www.osemocphoto.com/collectManga/10768/10768_cover.jpg?1"
+                  :src="book[0].image"
                 />
               </figure>
             </div>
             <div class="column is-6 is-offset-1">
               <p class="title is-3">
-                Exorcist wa Otosenai (เอ็กซอร์ซิสต์ไม่อาจร่วงหล่น)
+                {{book[0].title}}
               </p>
               <br />
               <p class="subtitle is-5">
-                เรื่องย่อ:
-                เด็กหนุ่มผู้ถูกรับเลือกจากพระเจ้าให้กลายเป็นเอ็กซอร์ซิสผู้แข็งแกร่งที่สุดซึ่งมีหน้าที่ในการปราบจอมมาร
-                ได้พบเจอกับเด็กสาวผู้หนึ่ง
-                จนเกิดเป็นเรื่องราวแห่งความรักและความหวัง
+                {{book[0].desc}}
               </p>
-              <p class="subtitle is-6">เขียนโดย : 有馬あるま</p>
-              <p class="subtitle is-6">ประเภท : Romance, Action</p>
-              <p class="subtitle is-6">วันที่วางขาย : 1/01/2020</p>
-              <p class="subtitle is-6">ราคา : 125 บาท</p>
+              <p class="subtitle is-6">เขียนโดย : {{book[0].penname}}</p>
+              <p class="subtitle is-6">ประเภท : <span
+                          
+                          
+                          v-for="(value, index) in book[0].type"
+                          :key="index"
+                        >
+                          {{ value }}
+                        </span></p>
+              <p class="subtitle is-6">วันที่วางขาย : {{book[0].publish_date}}</p>
+              <p class="subtitle is-6">ราคา : {{book[0].price}} บาท</p>
 
               <br />
               <p class="level-centere">
@@ -43,11 +47,33 @@
 </template>
 <script>
 import NavBar from "@/components/NavBar";
-
+import axios from "axios";
 export default {
   name: "DetailsBook",
   components: {
     NavBar,
+  },
+  data() {
+    return {
+      book: {
+        0: {},
+      },
+    };
+  },
+  mounted() {
+    this.getBookDetail(this.$route.params.id);
+  },
+  methods: {
+    async getBookDetail(slideid) {
+      await axios
+        .get(`http://localhost:3000/DetailsBook/${slideid}`)
+        .then((response) => {
+          this.book = response.data;
+        })
+        .catch((error) => {
+          this.error = error.response.data.message;
+        });
+    },
   },
 };
 </script>

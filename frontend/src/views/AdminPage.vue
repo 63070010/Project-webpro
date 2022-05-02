@@ -39,7 +39,7 @@
           <div class="is-multiline columns is-variable is-2">
             <div
               class="column is-one-quarter"
-              v-for="value in Book_list"
+              v-for="value in books"
               :key="value.id"
             >
               <div class="card">
@@ -57,18 +57,18 @@
                           class="is-size-6 has-text-centered subtitle"
                           style="color: #edc7b7"
                         >
-                          {{ value.Book_name }}
+                          {{ value.title }}
                         </p>
 
                         <p class="is-size-7" style="color: #bab2b5">
-                          By {{ value.Pen_name }}
+                          By {{ value.penname }}
                         </p>
                         type:
 
                         <span
                           class="is-size-7 text-right"
                           style="color: #bab2b5"
-                          v-for="(value, index) in value.Book_type"
+                          v-for="(value, index) in value.type"
                           :key="index"
                         >
                           {{ value }} &nbsp;
@@ -105,7 +105,7 @@
           <div class="is-multiline columns is-variable is-2">
             <div
               class="column is-one-quarter"
-              v-for="value in Book_list"
+              v-for="value in books"
               :key="value.id"
             >
               <div class="card">
@@ -127,14 +127,14 @@
                         </p>
 
                         <p class="is-size-7" style="color: #bab2b5">
-                          By {{ value.Pen_name }}
+                          By {{ value.penname }}
                         </p>
                         type:
 
                         <span
                           class="is-size-7 text-right"
                           style="color: #bab2b5"
-                          v-for="(value, index) in value.Book_type"
+                          v-for="(value, index) in value.type"
                           :key="index"
                         >
                           {{ value }} &nbsp;
@@ -331,6 +331,7 @@
 <script>
 import NavbarAdmin from "@/components/NavbarAdmin";
 import MyCarosel from "@/components/MyCarosel";
+import axios from "@/plugins/axios";
 export default {
   name: "AdminPage",
   components: {
@@ -341,71 +342,40 @@ export default {
     return {
       Add_promotion: false,
       cancel_promotion: false,
-      promotion: [
-        {
-          id: 0,
-          title: "AZ",
-          desc: "เนื้อหา",
-        },
-
-        {
-          id: 1,
-          title: "BBBZ",
-          desc: "เนื้อหา",
-        },
-      ],
-
-      Book_list: [
-        {
-          id: 0,
-          Book_name: "Exorcist wa Otosenai ",
-          Pen_name: "Apple",
-          price: 100,
-          is_favorite: false,
-          Book_type: ["comedy", "Romance"],
-          image:
-            "https://i0.wp.com/anitrendz.net/news/wp-content/uploads/2021/08/princess-connect-redive-season-2-trailer-screenshot.png",
-          detail_book:
-            " เด็กหนุ่มผู้ถูกรับเลือกจากพระเจ้าให้กลายเป็นเอ็กซอร์ซิสผู้แข็งแกร่งที่สุดซึ่งมีหน้าที่ในการปราบจอมมาร ได้พบเจอกับเด็กสาวผู้หนึ่ง จนเกิดเป็นเรื่องราวแห่งความรักและความหวัง ",
-        },
-        {
-          id: 1,
-          Book_name: "This Is the Memory Until the Girl ",
-          Pen_name: "Panasonic",
-          price: 120,
-          is_favorite: false,
-          Book_type: ["comedy", "Drama"],
-          image:
-            "https://skilfulgamer.com/wp-content/uploads/2022/02/genshin-impact-original-art-from-website_11zon-1.jpg",
-          detail_book:
-            "  เด็กสาวผู้มีปัญหาในการเข้าสังคม ที่ได้พบกับเพื่อนสนิทที่รู้จักกันผ่านทางเกมออนไลน์ จนพัฒนาความสัมพันธ์จนไปเป็นคนรักในที่สุด เรื่องนี้ฟีลกู๊ดล้วนๆครับ ออกแนวความสัมพันธ์พระนาง น่ารักกุ๊กกิ๊ก นางเอกมีปัญหาเรื่องสนทนากับคนทั่วไปแบบโคมิเลย ต้องใช้มือถือช่วยพูด พระเอกเลยมีเวลาโชว์ความสุภาพบุรษ จนความรู้สึกค่อยๆเปลี่ยนไปครับ",
-        },
-      ],
-      order: [
-        {
-          id: 0,
-          list_book: ["Exorcist wa Otosenai", "Mushoku Tensei"],
-          number_order: 1,
-          stage: "succeed",
-          image_check:
-            "https://f.ptcdn.info/360/068/000/q6il3skqoY5eB248knw-o.jpg",
-          total_pice: 300,
-        },
-        {
-          id: 1,
-          Book_name: "Exorcist ",
-          list_book: [
-            "สุดยอดระบบอัตราบอกความสำเร็จ",
-            "Ore ni Trauma wo Ataeta Joshi-tachi",
-          ],
-          number_order: 2,
-          stage: "wait",
-          image_check:
-            "https://f.ptcdn.info/393/067/000/q2uaruibdir370ioYjS-o.jpg",
-          total_pice: 250,
-        },
-      ],
+      books: [],
     };
+  },
+  async mounted() {
+    await this.getPendingBooks();
+    
+  },
+  methods: {
+    async getPendingBooks() {
+      await axios
+        .get("http://localhost:3000/adminPage")
+        .then((response) => {
+          this.books = response.data;
+          console.log(this.books)
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    cardpush(book) {
+      axios
+        .post(`http://localhost:3000/addbook/${book.id}`, {
+          cart_id: this.cart[this.cart.length - 1].cart_id,
+          price: book.price,
+        })
+        .then((response) => {
+          this.totalBook = [...this.totalBook, response.data[0]];
+          this.cart_item = [...this.cart_item, response.data[0]];
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
 };
 </script>
