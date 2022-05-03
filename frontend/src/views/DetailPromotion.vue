@@ -11,7 +11,11 @@
 
           <p class="title is-5">{{ promotion[0].title }}</p>
           <br />
-          <p class="subtitle is-6">{{ promotion[0].desc }}</p>
+          <p class="subtitle is-6">
+            {{ promotion[0].desc }} <br />
+            <br />
+            โค้ดโปรโมชั่น: {{ promotion[0].code }}
+          </p>
 
           <p class="level-centere">
             <router-link to="/">

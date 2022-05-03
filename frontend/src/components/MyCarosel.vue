@@ -43,6 +43,7 @@ export default {
         .get(`http://localhost:3000/promotion_image`)
         .then((response) => {
           this.promotion = response.data;
+          console.log(this.promotion);
         })
         .catch((error) => {
           this.error = error.response.data.message;

@@ -99,15 +99,16 @@ router.get("/cart_check", isLoggedIn, async function (req, res, next) {
     });
 });
 
+// โชว์หนังสือในตระกร้า
 router.get("/cartitem/:id", isLoggedIn, async function (req, res, next) {
-  const cartitem = await pool.query("SELECT item_no, book_id, price, cart_id FROM ebook.cart_item join ebook.cart using(cart_id) where cart_id = ?;", [
+  const cartitem = await pool.query("SELECT item_no, book_id, price, cart_id, total_price, promotion_id FROM ebook.cart_item join ebook.cart using(cart_id) where cart_id = ?;", [
     req.params.id,]);
   return res.json(cartitem[0]);
 
 });
 
 router.get("/getCartItem", isLoggedIn, async function (req, res, next) {
-  const cartitem = await pool.query(`SELECT c.cart_id, item_no, ct.price, total_price, b.image, b.title, b.id
+  const cartitem = await pool.query(`SELECT c.cart_id, item_no, ct.price, total_price, b.image, b.title, b.id, promotion_id
 FROM cart_item ct
 join cart c
 using(cart_id) 
@@ -129,7 +130,8 @@ and u.id = ?`
 
 // หนังสือ
 router.get("/DetailsBook/:id", async function (req, res, next) {
-  const DetailsBook = await pool.query("SELECT * FROM book join author using(user_id) where book.id = ?", [
+  const DetailsBook = await pool.query(`SELECT a.user_id, b.id, title, b.desc, b.type, penname, image, b.price
+   FROM book b join author a using(user_id) where b.id = ? `, [
     req.params.id,
   ]);
   res.json(DetailsBook[0])
@@ -150,7 +152,7 @@ router.post('/addcart', isLoggedIn, async function (req, res, next) {
   }
 });
 
-// เพิ่มหนังสือ
+// เพิ่มหนังสือลงในตะกร้า
 router.post('/addbook/:id', isLoggedIn, async function (req, res, next) {
   try {
 
@@ -167,7 +169,7 @@ router.post('/addbook/:id', isLoggedIn, async function (req, res, next) {
     console.log(err)
   }
 });
-
+// เพิ่มราคาหนังสือตามที่เอาลงตะกร้า
 router.put('/totalprice', isLoggedIn, async function (req, res, next) {
   const [rows3, fields3] = await pool.query(
 
@@ -184,6 +186,7 @@ router.put('/totalprice', isLoggedIn, async function (req, res, next) {
 });
 
 
+// ลบหนังสือออกจากตะกร้า
 router.delete('/dropbook/:id', async function (req, res, next) {
   try {
     const [rows1, fields1] = await pool.query(
@@ -195,6 +198,7 @@ router.delete('/dropbook/:id', async function (req, res, next) {
   }
 });
 
+// ลบราคาหนังสือตามที่เอาลงตะกร้า
 router.put('/droptotalprice', isLoggedIn, async function (req, res, next) {
   const [row, fields] = await pool.query(
 
@@ -207,6 +211,44 @@ router.put('/droptotalprice', isLoggedIn, async function (req, res, next) {
   res.json()
 
 });
+
+// ใช้โปรโมชั่น
+router.put('/submitPromotion', isLoggedIn, async function (req, res, next) {
+  const [row, fields] = await pool.query(
+
+    'SELECT promotion_id FROM promotion WHERE code =?', [req.body.codepromotion])
+
+  await pool.query(
+    'UPDATE `cart` SET promotion_id = ? WHERE cart_id = ?',
+    [row[0].promotion_id, req.body.cart_id]
+  )
+  res.json(row[0].promotion_id)
+});
+
+// ยกเลิกโปรโมชั่น
+router.put('/canceltPromotion', isLoggedIn, async function (req, res, next) {
+  const [row, fields] = await pool.query(
+
+    'SELECT promotion_id FROM promotion WHERE code =?', [req.body.codepromotion])
+
+  await pool.query(
+    'UPDATE `cart` SET promotion_id = ? WHERE cart_id = ?',
+    [null, req.body.cart_id]
+  )
+  res.json()
+});
+
+// แก้ไขราคาตามโปรโมชั่น
+router.put('/usedpronotion', isLoggedIn, async function (req, res, next) {
+  const [row, fields] = await pool.query(
+    'UPDATE `cart` SET total_price = ? WHERE cart_id = ?',
+    [req.body.price, req.body.cart_id]
+  )
+  res.json(req.body.price)
+
+});
+
+
 
 exports.router
   = router;

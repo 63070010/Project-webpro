@@ -31,22 +31,42 @@
               <p class="subtitle is-6">ราคา : {{ book[0].price }} บาท</p>
 
               <br />
-              <p class="level-centere">
-                <a class="button is-medium is-info is-outlined">
+              <div
+                class="level-centere"
+                v-if="
+                  this.totalBook.find((x) => x.book_id == book[0].id) ===
+                  undefined
+                "
+              >
+                <a
+                  class="button is-medium is-info is-outlined"
+                  @click="cardpush(book[0])"
+                >
                   เพิ่มลงในตะกร้า
                 </a>
-              </p>
+              </div>
+              <div class="level-centere" v-else>
+                <a class="button is-medium is-info is-outlined" disabled>
+                  มีหนังสือเล่มนี้แล้ว
+                </a>
+              </div>
             </div>
           </div>
+        </div>
+        <div class="divider is-info is-size-6" style="color: #123c69">
+          <router-link to="/" style="color: #123c69"
+            >กลับไปเลือกซื้อหนังสือเพิ่ม</router-link
+          >
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { defineComponent } from "vue";
 import NavBar from "@/components/NavBar";
-import axios from "axios";
-export default {
+import axios from "@/plugins/axios";
+export default defineComponent({
   name: "DetailsBook",
   components: {
     NavBar,
@@ -56,24 +76,94 @@ export default {
       book: {
         0: {},
       },
+      cart: [],
+      cart_item: [],
+      pay: {},
+      mybook: [],
+      totalBook: [],
     };
   },
-  mounted() {
-    this.getBookDetail(this.$route.params.id);
+  async mounted() {
+    await this.getBookDetail(this.$route.params.id);
+    await this.getcheck();
+    this.totalBook = [...this.cart_item, ...this.mybook];
   },
+
   methods: {
     async getBookDetail(id) {
       await axios
         .get(`http://localhost:3000/DetailsBook/${id}`)
         .then((response) => {
           this.book = response.data;
+          console.log(this.book);
+          console.log(id);
+          console.log(this.book[0].book_id);
         })
         .catch((error) => {
           this.error = error.response.data.message;
         });
     },
+    async getcheck() {
+      await axios
+        .get(`http://localhost:3000/cart_check/`)
+        .then((response) => {
+          this.cart = response.data.cart;
+          this.pay = response.data.payment;
+          this.mybook = response.data.mybook;
+
+          if (this.cart.length == 0 || this.cart.length == this.pay.length) {
+            axios
+              .post(`http://localhost:3000/addcart`)
+              .then((response) => {
+                this.cart.push(response.data);
+              })
+              .catch((error) => {
+                this.error = error.response.data.message;
+              });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      await axios
+        .get(
+          `http://localhost:3000/cartitem/${
+            this.cart[this.cart.length - 1].cart_id
+          }`
+        )
+        .then((response) => {
+          this.cart_item = response.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    async cardpush(book) {
+      await axios
+        .post(`http://localhost:3000/addbook/${book.id}`, {
+          cart_id: this.cart[this.cart.length - 1].cart_id,
+          price: book.price,
+        })
+        .then((response) => {
+          this.totalBook = [...this.totalBook, response.data[0]];
+          this.cart_item = [...this.cart_item, response.data[0]];
+        })
+
+        .catch((err) => {
+          console.log(err);
+        });
+      await axios
+        .put(`http://localhost:3000/totalprice`, {
+          cart_id: this.cart[this.cart.length - 1].cart_id,
+          price: book.price,
+        })
+        .then(() => {})
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
-};
+});
 </script>
 <style lang="">
 </style>

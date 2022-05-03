@@ -13,7 +13,7 @@
             Books in the cart
           </div>
         </div>
-        <div>
+        <div v-if="Cart_item.length > 0">
           <div
             class="box"
             v-for="(cart, index) in Cart_item"
@@ -60,14 +60,26 @@
             <h2 class="subtitle">
               จำนวนหนังสือซื้อที่ซื้อ : {{ Cart_item.length }} เล่ม
             </h2>
-
-            <router-link to="/CheckoutPage" style="color: #123c69">
+            <router-link
+              :to="`/CheckoutPage/${Cart_item[0].cart_id}`"
+              style="color: #123c69"
+              v-if="Cart_item.length > 0"
+            >
               <button class="button">
                 ไปหน้าชำระเงิน&emsp;<i
                   class="fa fa-arrow-circle-right"
                   aria-hidden="true"
-                ></i></button
-            ></router-link>
+                ></i>
+              </button>
+            </router-link>
+            <div>
+              <button class="button" disabled v-if="Cart_item.length == 0">
+                ไปหน้าชำระเงิน&emsp;<i
+                  class="fa fa-arrow-circle-right"
+                  aria-hidden="true"
+                ></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -84,7 +96,9 @@ export default {
   },
   data() {
     return {
-      Cart_item: [],
+      Cart_item: {
+        0: {},
+      },
       totalprice: 0,
     };
   },
@@ -102,7 +116,7 @@ export default {
         .then((response) => {
           this.Cart_item = response.data;
           this.totalprice = response.data[0].total_price;
-          console.log(this.Cart_item);
+          console.log(this.Cart_item[0]);
         })
         .catch((err) => {
           console.log(err);

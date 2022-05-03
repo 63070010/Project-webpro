@@ -24,14 +24,11 @@
                 <p>
                   ธนาคาร กสิกรไทย
                   <br />
-                  เลขที่บัญชี : xxx-xxx-xx
+                  ชื่อบัญชี : หนังสือออนไลน์ อีไฟท์บุค
+                  <br />
+                  เลขที่บัญชี : 0498765793
                 </p>
               </div>
-            </div>
-            <div class="level-right">
-              <label class="radio">
-                <input type="radio" v-model="paychosse" value="pay_one" />
-              </label>
             </div>
           </article>
         </div>
@@ -48,14 +45,11 @@
                 <p>
                   พร้อมเพย์
                   <br />
-                  รหัสพร้อมเพย์ : xxx-xxx-xx
+                  ชื่อบัญชี : หนังสือออนไลน์ อีไฟท์บุค
+                  <br />
+                  รหัสพร้อมเพย์ : 0999728955
                 </p>
               </div>
-            </div>
-            <div class="level-right">
-              <label class="radio">
-                <input type="radio" v-model="paychosse" value="pay_two" />
-              </label>
             </div>
           </article>
         </div>
@@ -72,14 +66,11 @@
                 <p>
                   ทรูมันนี่วอลเล็ท
                   <br />
-                  เบอร์ทรูมันนี่วอลเล็ท : xxx-xxx-xx
+                  ชื่อบัญชี : หนังสือออนไลน์ อีไฟท์บุค
+                  <br />
+                  เบอร์ทรูมันนี่วอลเล็ท : 0999728955
                 </p>
               </div>
-            </div>
-            <div class="level-right">
-              <label class="radio">
-                <input type="radio" v-model="paychosse" value="pay_three" />
-              </label>
             </div>
           </article>
         </div>
@@ -97,32 +88,40 @@
           <article class="media">
             <div class="media-content">
               <label class="label" style="color: #123c69"
-                >กรอกโค้ดโปรโมชั่น</label
+                >กรอกโค้ดโปรโมชั่น จำกัดหนึ่งโค้ดต่อ 1 ตะกร้า</label
               >
               <input
                 class="input is-medium is-rounded"
                 type="text"
                 v-model="Promotion"
+                v-if="checkcode == 0"
+              />
+              <input
+                class="input is-medium is-rounded"
+                type="text"
+                v-model="Promotion"
+                disabled
+                v-if="checkcode == 1"
               />
 
               <div class="level mt-4">
                 <button
+                  v-if="checkcode == 0"
                   class="button"
                   style="color: #eee2dc; background-color: #ac3b61"
-                  @click="submitPromotion()"
+                  @click="submitPromotion(Cart_item[0].cart_id)"
                 >
-                  ใช้
+                  ใช้โค้ดโปรโมชั่น
                 </button>
 
-                <div class="level-right">
-                  <button
-                    class="button"
-                    style="color: #eee2dc; background-color: #ac3b61"
-                    @click="canceltPromotion()"
-                  >
-                    ยกเลิกทั้งหมด
-                  </button>
-                </div>
+                <button
+                  v-if="checkcode == 1"
+                  class="button"
+                  style="color: #eee2dc; background-color: #ac3b61"
+                  @click="canceltPromotion(Cart_item[0].cart_id)"
+                >
+                  ยกเลิกโค้ดโปรโมชั่น
+                </button>
               </div>
             </div>
           </article>
@@ -141,14 +140,14 @@
               สรุปรายการสั่งซื้อ
             </h1>
             <div class="box" v-for="card in Cart_item" v-bind:key="card.id">
-              <article class="media">
+              <article class="media" v-if="Cart_item.length > 0">
                 <div class="media-left">
                   <img :src="card.image" alt="Image" class="image is-64x64" />
                 </div>
                 <div class="media-content">
                   <div class="content">
                     <p>
-                      <strong>{{ card.Book_name }}</strong>
+                      <strong>{{ card.title }}</strong>
                       <br />
                       <small>{{ card.price }} บาท</small>
                     </p>
@@ -158,11 +157,14 @@
             </div>
 
             <h1 class="title has-text-centered section-title is-size-5">
-              ยอดชำระเงิน(รวมใช้โค้ดโปรโมชั่น) : 600 บาท
+              ยอดชำระเงิน(รวมใช้โค้ดโปรโมชั่น) :
+              {{ total }} บาท
             </h1>
           </div>
           <div class="column is-10 has-text-centered is-offset-1">
-            <h2 class="subtitle">จำนวนหนังสือซื้อที่ซื้อ : 2 เล่ม</h2>
+            <h2 class="subtitle">
+              จำนวนหนังสือซื้อที่ซื้อ : {{ Cart_item.length }} เล่ม
+            </h2>
             <button class="button" @click="Payment = true">
               ยืนยันรายการชำระเงิน&emsp;<i
                 class="fa fa-check"
@@ -190,11 +192,7 @@
               >
               </span>
               <h1 class="title has-text-centered section-title is-size-5">
-                ยอดชำระเงิน(รวมใช้โค้ดโปรโมชั่น) : 600 บาท
-              </h1>
-              <h1 class="title has-text-centered section-title is-size-5">
-                ชำระเงิน ผ่านทาง พร้อมเพย์ รหัสพร้อมเพย์ xxx-xxx-xx
-                <!--เอามาจาก ตอนติ้กเลือก เ-->
+                ยอดชำระเงิน(รวมใช้โค้ดโปรโมชั่น) : {{ this.total }} บาท
               </h1>
               เมื่อโอนเสร็จ กรุณาส่งสรีปการชำระเงิน
               <div class="column is-5">
@@ -217,7 +215,12 @@
             </div>
           </section>
           <footer class="modal-card-foot">
-            <button class="button is-success">ส่งข้อมูล</button>
+            <button
+              class="button is-success"
+              @click="submitpay(Cart_item[0].cart_id)"
+            >
+              ส่งข้อมูล
+            </button>
             <button class="button" @click="Payment = false">ยกเลิก</button>
           </footer>
         </div>
@@ -227,6 +230,8 @@
 </template>
 <script>
 import NavBar from "@/components/NavBar";
+import axios from "@/plugins/axios";
+
 export default {
   name: "CheckoutPage",
   components: {
@@ -235,35 +240,125 @@ export default {
   data() {
     return {
       Payment: false,
-      paychosse: "pay_one",
       Promotion: "",
-      Cart_item: [
-        {
-          id: 0,
-          Book_name: "Exorcist wa Otosenai ",
-          Pen_name: "Apple",
-          price: 100,
-          is_favorite: false,
-          Book_type: ["comedy", "Romance"],
-          image:
-            "https://www.osemocphoto.com/collectManga/10768/10768_cover.jpg?1",
-          detail_book:
-            " เด็กหนุ่มผู้ถูกรับเลือกจากพระเจ้าให้กลายเป็นเอ็กซอร์ซิสผู้แข็งแกร่งที่สุดซึ่งมีหน้าที่ในการปราบจอมมาร ได้พบเจอกับเด็กสาวผู้หนึ่ง จนเกิดเป็นเรื่องราวแห่งความรักและความหวัง ",
-        },
-        {
-          id: 1,
-          Book_name: "Exorcist ",
-          Pen_name: "Mookie",
-          price: 500,
-          is_favorite: false,
-          Book_type: ["comedy", "Romance"],
-          image:
-            "https://www.storytel.com/images/640x640/0000031877.jpg",
-          detail_book:
-            " เด็กหนุ่มผู้ถูกรับเลือกจากพระเจ้าให้กลายเป็นเอ็กซอร์ซิสผู้แข็งแกร่งที่สุดซึ่งมีหน้าที่ในการปราบจอมมาร ได้พบเจอกับเด็กสาวผู้หนึ่ง จนเกิดเป็นเรื่องราวแห่งความรักและความหวัง ",
-        },
-      ],
+      promotioncheck: {
+        0: {},
+      },
+      num: 0,
+      Cart_item: {
+        0: {},
+      },
+      checkcode: 0,
+      total: 0,
+      codenum: 0,
+      numcheck: true,
+      keepnum: 0,
     };
+  },
+  async mounted() {
+    await this.getItems(this.$route.params.id);
+  },
+  methods: {
+    async getItems() {
+      await axios
+        .get("http://localhost:3000/getCartItem", {
+          params: {
+            search: this.search,
+          },
+        })
+        .then((response) => {
+          this.Cart_item = response.data;
+          this.total = response.data[0].total_price;
+          this.keepnum = response.data[0].total_price;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      await axios
+        .get(`http://localhost:3000/promotion_image`)
+        .then((response) => {
+          this.promotioncheck = response.data;
+        })
+        .catch((error) => {
+          this.error = error.response.data.message;
+        });
+    },
+    async submitPromotion(cartid) {
+      if (this.promotioncheck.find((x) => x.code == this.Promotion)) {
+        await axios
+          .put(`http://localhost:3000/submitPromotion`, {
+            cart_id: cartid,
+            codepromotion: this.Promotion,
+          })
+          .then((response) => {
+            this.checkcode = 1;
+            this.Promotion = "";
+            this.codenum = response.data;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+
+        if (this.codenum == 1 && this.total >= 1000) {
+          this.total = (this.total * 90) / 100;
+        } else if (this.codenum == 2 && this.total >= 1500) {
+          this.total = (this.total * 85) / 100;
+        } else if (this.codenum == 3 && this.total <= 300) {
+          this.total = (this.total * 50) / 100;
+        } else if (this.codenum == 4 && this.total <= 2200) {
+          this.total = (this.total * 80) / 100;
+        } else {
+          await axios
+            .put(`http://localhost:3000/canceltPromotion`, {
+              cart_id: cartid,
+              codepromotion: this.Promotion,
+            })
+            .then(() => {
+              this.checkcode = 0;
+              this.Promotion = "";
+              this.numcheck = false;
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      } else {
+        alert("โค้ดไม่ถูกต้อง");
+        this.Promotion = "";
+      }
+    },
+
+    async canceltPromotion(cartid) {
+      await axios
+        .put(`http://localhost:3000/canceltPromotion`, {
+          cart_id: cartid,
+          codepromotion: this.Promotion,
+        })
+        .then(() => {
+          this.checkcode = 0;
+          this.Promotion = "";
+          this.total = this.keepnum;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    async submitpay(cartid) {
+      // อันนี้แก้ไขเงินใน cart
+      await axios
+        .put(`http://localhost:3000/usedpronotion`, {
+          cart_id: cartid,
+          price: this.total,
+        })
+        .then((response) => {
+          this.total = response.data;
+          this.numcheck = false;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      // สร้างออเดอร์ต่อเลย
+    },
   },
 };
 </script>

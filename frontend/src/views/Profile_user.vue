@@ -147,7 +147,7 @@
         <div class="tab-contents">
           <!--หนังสือที่ขาย-->
           <div
-            class="content mt-6 mb-6"
+            class="content mb-6"
             v-bind:class="{ 'is-active': isActive == 'MYbooksell' }"
           >
             <br />

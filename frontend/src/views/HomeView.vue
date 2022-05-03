@@ -8,7 +8,7 @@
         <section class="section">
           <h1>
             <span class="material-icons" style="color: #123c69"
-              >&#xe87d; มาใหม่สุด
+              >&#xe87d; หนังสือทั้งหมด
             </span>
 
             <div
@@ -132,7 +132,7 @@ export default defineComponent({
     };
   },
   async mounted() {
-    await this.getBooks(4);
+    await this.getBooks();
     await this.getcheck();
     this.totalBook = [...this.cart_item, ...this.mybook];
   },

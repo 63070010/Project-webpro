@@ -39,6 +39,7 @@ const routes = [
   {
     path: '/DetailsBook/:id',
     name: 'DetailsBook',
+    meta: { login: true },
     component: DetailsBook
   },
   {
@@ -50,7 +51,7 @@ const routes = [
   {
     path: '/DetailPromotion/:id',
     name: 'DetailPromotion',
-    
+
     component: DetailPromotion
   }
   ,
@@ -61,7 +62,7 @@ const routes = [
     component: AdminPage
   },
   {
-    path: '/CheckoutPage',
+    path: '/CheckoutPage/:id',
     name: 'CheckoutPage',
     meta: { login: true },
     component: CheckoutPage
@@ -97,7 +98,7 @@ router.beforeEach((to, from, next) => {
 
   if (to.meta.guess && isLoggedIn) {
     alert("You've already logged in")
-    next({ path: '/'})
+    next({ path: '/' })
   }
 
   next()
