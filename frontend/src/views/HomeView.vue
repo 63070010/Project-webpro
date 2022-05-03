@@ -2,12 +2,8 @@
   <div>
     <NavBar />
     <MyCarosel />
-
     <WarnPay />
-    <div class="columns">
-     
-    </div>
-    <div class="columns">
+    <div class="columns hero is-fullheight">
       <div class="column mt-4">
         <section class="section">
           <h1>
@@ -15,23 +11,31 @@
               >&#xe87d; มาใหม่สุด
             </span>
 
-            <div class="field has-addons is-pulled-right"></div>
+            <div
+              class="field has-addons is-pulled-right"
+              style="color: #123c69"
+            >
+              หนังสือในตะกร้า: {{ numbookincart }}
+            </div>
             <div class="divider is-info" style="color: #123c69">
               Latest Book
             </div>
           </h1>
+          <div class="columns is-mobile is-centered">
+            <div class="box has-text-centered">
+              <input
+                class="input"
+                type="text"
+                v-model="search"
+                placeholder="ชื่อหนังสือ"
+              />
+              <button @click="getBooks" class="button mt-3">
+                ค้นหาหนังสือ
+              </button>
+            </div>
+          </div>
         </section>
- <div class="column is-half">
-        <input
-          class="input"
-          type="text"
-          v-model="search"
-          placeholder="Search blog(s)"
-        />
-      </div>
-      <div class="column is-half">
-        <button @click="getBooks" class="button">Search</button>
-      </div>
+
         <div class="container is-max-desktop">
           <div class="is-multiline columns is-variable is-2">
             <div
@@ -96,17 +100,6 @@
             </div>
           </div>
         </div>
-
-        <section class="section">
-          <h1>
-            <span class="material-icons" style="color: #123c69"
-              >&#xe865; หนังสือทั้งหมด
-            </span>
-
-            <div class="field has-addons is-pulled-right">Tag</div>
-          </h1>
-          <div class="divider is-info" style="color: #123c69">All Book</div>
-        </section>
       </div>
     </div>
   </div>
@@ -128,8 +121,6 @@ export default defineComponent({
   },
   data() {
     return {
-      showdetailbook: false,
-      book_numdetail: 0,
       books: [],
       search: "",
       cart: {},
@@ -137,6 +128,7 @@ export default defineComponent({
       pay: {},
       mybook: [],
       totalBook: [],
+      numbookincart: 0,
     };
   },
   async mounted() {
@@ -167,6 +159,8 @@ export default defineComponent({
           this.pay = response.data.payment;
           this.mybook = response.data.mybook;
           console.log(this.mybook);
+          console.log(this.pay);
+          console.log(this.cart);
           if (this.cart.length == 0 || this.cart.length == this.pay.length) {
             axios
               .post(`http://localhost:3000/addcart`)
@@ -189,13 +183,14 @@ export default defineComponent({
         )
         .then((response) => {
           this.cart_item = response.data;
+          this.numbookincart = this.cart_item.length;
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    cardpush(book) {
-      axios
+    async cardpush(book) {
+      await axios
         .post(`http://localhost:3000/addbook/${book.id}`, {
           cart_id: this.cart[this.cart.length - 1].cart_id,
           price: book.price,
@@ -203,7 +198,18 @@ export default defineComponent({
         .then((response) => {
           this.totalBook = [...this.totalBook, response.data[0]];
           this.cart_item = [...this.cart_item, response.data[0]];
+          this.numbookincart = this.cart_item.length;
         })
+
+        .catch((err) => {
+          console.log(err);
+        });
+      await axios
+        .put(`http://localhost:3000/totalprice`, {
+          cart_id: this.cart[this.cart.length - 1].cart_id,
+          price: book.price,
+        })
+        .then(() => {})
         .catch((err) => {
           console.log(err);
         });
@@ -214,4 +220,3 @@ export default defineComponent({
 <style>
 @import "~@creativebulma/bulma-divider";
 </style>
-    

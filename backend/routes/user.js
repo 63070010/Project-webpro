@@ -133,11 +133,6 @@ router.post('/user/login', async (req, res, next) => {
     }
 })
 
-router.get('/Profile_user/:id', isLoggedIn, async (req, res, next) => {
-    console.log(req.user.username)
-    res.json(req.user)
-});
-
 router.get("/adminPage", async function (req, res, next) {
     try {
         const search = req.query.search || ''

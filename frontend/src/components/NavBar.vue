@@ -19,7 +19,9 @@
           </div>
           <div v-else class="navbar-item">
             <a>
-              <router-link :to="`/Profile_user/${user.id}`"  style="color: #ac3b61"
+              <router-link
+                :to="`/Profile_user/${user.id}`"
+                style="color: #ac3b61"
                 >โปรไฟล์</router-link
               >
               <a class="ml-2 mr-1" style="color: #ac3b61">/</a>
@@ -28,8 +30,6 @@
               >
             </a>
           </div>
-
-          
         </div>
 
         <div class="navbar-canter">
@@ -45,9 +45,7 @@
           <p class="navbar-item">
             <router-link to="/Cart_Book" style="color: #ac3b61"
               ><button class="button">
-                <span style="color: #ac3b61"
-                  >(2)<!--จำนวนหนังสือซื้อที่ซื้อ--></span
-                >
+                <span style="color: #ac3b61">ไปหน้ารถเข็น</span>
                 <span class="icon is-size-5 ml-2"
                   ><i class="fas fa-shopping-cart" style="color: #ac3b61"> </i
                 ></span>
@@ -62,33 +60,31 @@
   </div>
 </template>
 <script>
-
-import axios from '@/plugins/axios'
+import axios from "@/plugins/axios";
 export default {
-  data () {
+  data() {
     return {
       user: null,
       name: "NavBar",
-    }
+    };
   },
-  mounted () {
-     this.onAuthChange()
-   },
-   methods: {
-     onAuthChange () {
-       const token = localStorage.getItem('token')
-       if (token) {
-         this.getUser()
-       }
-     },
-     getUser () {
-       
-       axios.get('http://localhost:3000/user/me').then(res => {
-         this.user = res.data
-       })
-     },
-   }
-}
+  mounted() {
+    this.onAuthChange();
+  },
+  methods: {
+    onAuthChange() {
+      const token = localStorage.getItem("token");
+      if (token) {
+        this.getUser();
+      }
+    },
+    getUser() {
+      axios.get("http://localhost:3000/user/me").then((res) => {
+        this.user = res.data;
+      });
+    },
+  },
+};
 </script>
 <style >
 </style>

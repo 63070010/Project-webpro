@@ -2,35 +2,33 @@
   <div>
     <NavBar />
     <div>
-      <div class="hero-body hero is-fullheight">
+      <div class="hero-body hero is-fullheight mt-6">
         <div class="container has-text-centered">
           <div class="columns is-vcentered">
-            <div class="column is-5">
+            <div class="column is-4">
               <figure class="image is-1by1">
-                <img
-                  :src="book[0].image"
-                />
+                <img :src="book[0].image" />
               </figure>
             </div>
             <div class="column is-6 is-offset-1">
               <p class="title is-3">
-                {{book[0].title}}
+                {{ book[0].title }}
               </p>
               <br />
               <p class="subtitle is-5">
-                {{book[0].desc}}
+                {{ book[0].desc }}
               </p>
-              <p class="subtitle is-6">เขียนโดย : {{book[0].penname}}</p>
-              <p class="subtitle is-6">ประเภท : <span
-                          
-                          
-                          v-for="(value, index) in book[0].type"
-                          :key="index"
-                        >
-                          {{ value }}
-                        </span></p>
-              <p class="subtitle is-6">วันที่วางขาย : {{book[0].publish_date}}</p>
-              <p class="subtitle is-6">ราคา : {{book[0].price}} บาท</p>
+              <p class="subtitle is-6">เขียนโดย : {{ book[0].penname }}</p>
+              <p class="subtitle is-6">
+                ประเภท :
+                <span v-for="(value, index) in book[0].type" :key="index">
+                  {{ value }}
+                </span>
+              </p>
+              <p class="subtitle is-6">
+                วันที่วางขาย : {{ book[0].publish_date }}
+              </p>
+              <p class="subtitle is-6">ราคา : {{ book[0].price }} บาท</p>
 
               <br />
               <p class="level-centere">
@@ -64,9 +62,9 @@ export default {
     this.getBookDetail(this.$route.params.id);
   },
   methods: {
-    async getBookDetail(slideid) {
+    async getBookDetail(id) {
       await axios
-        .get(`http://localhost:3000/DetailsBook/${slideid}`)
+        .get(`http://localhost:3000/DetailsBook/${id}`)
         .then((response) => {
           this.book = response.data;
         })

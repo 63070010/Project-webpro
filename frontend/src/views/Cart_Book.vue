@@ -13,7 +13,35 @@
             Books in the cart
           </div>
         </div>
-        <CartItem />
+        <div>
+          <div
+            class="box"
+            v-for="(cart, index) in Cart_item"
+            v-bind:key="cart.id"
+          >
+            <article class="media">
+              <div class="media-left">
+                <img :src="cart.image" alt="Image" class="image is-128x128" />
+              </div>
+              <div class="media-content" style="margin-left: 900px">
+                <div class="content">
+                  <p>
+                    <strong>ชื่อหนังสือ: {{ cart.title }}</strong>
+                    <br />
+                    <small>ราคา: {{ cart.price }}</small>
+                  </p>
+                </div>
+                <div class="level-right">
+                  <a class="level-item">
+                    <span class="icon is-small" @click="dropbook(cart, index)">
+                      <i class="fa fa-trash" style="color: #ac3b61"></i>
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
 
         <div class="divider is-info is-size-6" style="color: #123c69">
           <router-link to="/" style="color: #123c69"
@@ -25,11 +53,13 @@
         <div class="columns is-multiline box">
           <div class="column is-12">
             <h1 class="title has-text-centered section-title is-size-4">
-              ยอดชำระเงิน : 600 บาท
+              ยอดชำระเงิน : {{ totalprice }} บาท
             </h1>
           </div>
           <div class="column is-10 has-text-centered is-offset-1">
-            <h2 class="subtitle">จำนวนหนังสือซื้อที่ซื้อ : 2 เล่ม</h2>
+            <h2 class="subtitle">
+              จำนวนหนังสือซื้อที่ซื้อ : {{ Cart_item.length }} เล่ม
+            </h2>
 
             <router-link to="/CheckoutPage" style="color: #123c69">
               <button class="button">
@@ -46,22 +76,20 @@
 </template>
 <script>
 import NavBar from "@/components/NavBar";
-import CartItem from "@/components/CartItem";
 import axios from "@/plugins/axios";
 export default {
   name: "Cart_Book",
   components: {
     NavBar,
-    CartItem,
   },
   data() {
     return {
-      items: []
-    }
+      Cart_item: [],
+      totalprice: 0,
+    };
   },
   async mounted() {
     await this.getItems();
-    
   },
   methods: {
     async getItems() {
@@ -72,13 +100,37 @@ export default {
           },
         })
         .then((response) => {
-          this.books = response.data;
+          this.Cart_item = response.data;
+          this.totalprice = response.data[0].total_price;
+          console.log(this.Cart_item);
         })
         .catch((err) => {
           console.log(err);
         });
     },
-  }
+    async dropbook(arraycart, index) {
+      await axios
+        .delete(`http://localhost:3000/dropbook/${arraycart.item_no}`)
+        .then(() => {
+          this.Cart_item.splice(index, 1);
+        })
+        .catch((error) => {
+          alert(error.response.data.message);
+        });
+
+      await axios
+        .put(`http://localhost:3000/droptotalprice`, {
+          cart_id: arraycart.cart_id,
+          price: arraycart.price,
+        })
+        .then(() => {
+          this.totalprice -= arraycart.price;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  },
 };
 </script>
 <style >
