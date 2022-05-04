@@ -103,7 +103,7 @@ router.post('/user/login', async (req, res, next) => {
 
         // Check if password is correct
         console.log(password, user.password)
-        if (password != user.password) {
+        if (!(await bcrypt.compare(password, user.password))) {
 
             throw new Error('Incorrect username or password')
         }
