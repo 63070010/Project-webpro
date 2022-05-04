@@ -305,7 +305,7 @@ export default {
           this.total = (this.total * 85) / 100;
         } else if (this.codenum == 3 && this.total <= 300) {
           this.total = (this.total * 50) / 100;
-        } else if (this.codenum == 4 && this.total <= 2200) {
+        } else if (this.codenum == 4 && this.total >= 2200) {
           this.total = (this.total * 80) / 100;
         } else {
           await axios
@@ -317,11 +317,13 @@ export default {
               this.checkcode = 0;
               this.Promotion = "";
               this.numcheck = false;
+              alert("โค้ด ไม่ตรงตามเงื่อนไข");
             })
             .catch((err) => {
               console.log(err);
             });
         }
+        alert("ใช้โค้ดสำเร็จแล้ว");
       } else {
         alert("โค้ดไม่ถูกต้อง");
         this.Promotion = "";
