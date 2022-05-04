@@ -84,7 +84,7 @@
                 </div>
                 <br />
                 <footer class="card-footer">
-                  <a class="card-footer-item">อนุมัติ</a>
+                  <a class="card-footer-item" @click="allow(value.id)">อนุมัติ</a>
                   <a class="card-footer-item">ไม่อนุมัติ</a>
                 </footer>
               </div>
@@ -361,21 +361,19 @@ export default {
           console.log(err);
         });
     },
-
-    cardpush(book) {
-      axios
-        .post(`http://localhost:3000/addbook/${book.id}`, {
-          cart_id: this.cart[this.cart.length - 1].cart_id,
-          price: book.price,
-        })
+    async allow(bookId){
+      await axios
+        .get(`http://localhost:3000/allowBook/${bookId}`)
         .then((response) => {
-          this.totalBook = [...this.totalBook, response.data[0]];
-          this.cart_item = [...this.cart_item, response.data[0]];
+          this.books = response.data;
+          console.log(this.books)
         })
         .catch((err) => {
           console.log(err);
         });
     },
+
+    
   },
 };
 </script>

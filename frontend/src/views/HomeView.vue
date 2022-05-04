@@ -47,7 +47,7 @@
                 <router-link :to="`/DetailsBook/${value.id}`">
                   <div class="card-image">
                     <figure class="image is-1by1">
-                      <img :src="value.image" alt="Placeholder image" />
+                      <img :src="imagePath(value.file_path)" alt="Placeholder image" />
                     </figure>
                   </div>
 
@@ -137,8 +137,8 @@ export default defineComponent({
     this.totalBook = [...this.cart_item, ...this.mybook];
   },
   methods: {
-    async getBooks() {
-      await axios
+     getBooks() {
+       axios
         .get("http://localhost:3000", {
           params: {
             search: this.search,
@@ -150,6 +150,13 @@ export default defineComponent({
         .catch((err) => {
           console.log(err);
         });
+    },
+    imagePath(file_path) {
+      if (file_path) {
+        return "http://localhost:3000/" + file_path;
+      } else {
+        return "https://bulma.io/images/placeholders/640x360.png";
+      }
     },
     async getcheck() {
       await axios

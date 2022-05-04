@@ -12,7 +12,7 @@
               <figure class="image is-1by1">
                 <img
                   class="is-rounded"
-                  :src="`user.imageProfile`"
+                  :src="`${user.imageProfile}`"
                   v-if="user.imageProfile != null"
                 />
               </figure>
@@ -29,13 +29,13 @@
                   ชื่อจริง: {{ user.first_name }}
                   <span class="ml-4">นามสกุล: {{ user.last_name }} </span>
                 </p>
-                <br />
+
                 <p v-if="user.penname != null">
                   นามปากกา: {{ user.penname }}
                   <span class="ml-1" v-if="user.Phonenumber != null">
                     เบอร์โทรสับ: {{ user.Phonenumber }}
                   </span>
-                  <span class="ml-1" v-else>เบอร์โทรสับ: ยังไม่มีข้อมูล</span>
+                  <span class="ml-1" v-else>เบอร์โทรศัพท์: ยังไม่มีข้อมูล</span>
                 </p>
                 <p v-else>
                   นามปากกา: ยังไม่มีข้อมูล
@@ -63,7 +63,7 @@
               class="column is-2-tablet is-4-mobile has-text-centered ml-3"
               style="border-left: 2px dotted rgba(0, 0, 0, 0.2)"
             >
-              <p class="stat-val">5</p>
+              <p class="stat-val">{{ mysell_book.length }}</p>
               <p class="stat-key">หนังสือที่ลงขาย</p>
             </div>
           </div>
@@ -144,6 +144,7 @@
           </div>
         </div>
         <!--หนังสือที่มี-->
+
         <div class="tab-contents">
           <!--หนังสือที่ขาย-->
           <div
@@ -289,7 +290,7 @@
                   >ประเภทหนังสือ</label
                 >
                 <div class="select is-fullwidth is-medium is-rounded">
-                  <select v-model="Book_type" style="background-color: #eee2dc">
+                  <select v-model="bookType" style="background-color: #eee2dc">
                     <option value="Romance">Romance</option>
                     <option value="Action">Action</option>
                     <option value="Drama">Drama</option>
@@ -297,7 +298,9 @@
                 </div>
               </div>
               <div class="field" style="margin-top: 35px">
-                <button class="button is-success">เพิ่มประเภท</button>
+                <button class="button is-success" @click="addType">
+                  เพิ่มประเภท
+                </button>
               </div>
               <div class="field">
                 <label class="label" style="color: #ac3b61">ราคาหนังสือ</label>
@@ -315,12 +318,20 @@
               >
               <div class="file">
                 <label class="file-label">
-                  <input class="file-input" type="file" name="resume" />
+                  
                   <span class="file-cta">
                     <span class="file-icon">
                       <i class="fas fa-upload"></i>
                     </span>
-                    <span class="file-label"> Choose a file… </span>
+                    <span>
+                      <input
+                        
+                        multiple
+                        type="file"
+                        accept="image/png, image/jpeg, image/webp"
+                        @change="selectImages"
+                      />
+                    </span>
                   </span>
                 </label>
               </div>
@@ -338,7 +349,12 @@
             </div>
           </section>
           <footer class="modal-card-foot">
-            <button class="button is-success">บักทึก</button>
+            <button
+              class="button is-success"
+              @click="submitBook"
+            >
+              บักทึก
+            </button>
             <button class="button" @click="Add_Book = false">ยกเลิก</button>
           </footer>
         </div>
@@ -360,6 +376,8 @@ export default {
   data() {
     return {
       user: [],
+      images: [],
+      types: [],
       isActive: "MYbook",
       Book_list: { 0: [] },
       mysell_book: { 0: [] },
@@ -367,17 +385,18 @@ export default {
       Add_Book: false,
       Book_name: "",
       price: "",
+      bookType: "",
     };
   },
   mounted() {
-    this.getUser_id(this.$route.params.id);
+    this.getUser_id();
   },
   methods: {
     async getUser_id() {
       await axios
         .get(`http://localhost:3000/Profile/`)
         .then((response) => {
-          this.user = response.data.profile1[0];
+          this.user = response.data.profile3[0];
           this.Book_list = response.data.profile1;
           this.mysell_book = response.data.profile2;
           console.log(this.user);
@@ -387,6 +406,30 @@ export default {
         .catch((error) => {
           this.error = error.response.data.message;
         });
+    },
+    addType() {
+      this.types.push(this.bookType);
+      console.log(this.types);
+      this.bookType = "";
+    },
+    selectImages(event) {
+      this.images = event.target.files;
+      console.log(this.images);
+      console.log(this.Book_name)
+    },
+    submitBook() {
+      let formData = new FormData();
+      formData.append("title", this.Book_name);
+      this.types.forEach((type) => {
+        formData.append("type", type);
+      });
+      formData.append("price", this.price);
+      formData.append("myImage", this.images);
+      formData.append("desc", this.detail_book);
+       axios
+        .post("http://localhost:3000/books", formData)
+        .then((res) => this.push({ name: 'Profile_user' }))
+        .catch((e) => console.log(e.response.data));
     },
 
     DetailBookread(nunber) {

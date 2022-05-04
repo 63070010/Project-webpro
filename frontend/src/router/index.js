@@ -78,6 +78,12 @@ const routes = [
     name: 'WriteBook',
     meta: { login: true },
     component: WriteBook
+  }, 
+  {
+    path: '/ReadBook',
+    name: 'ReadBook',
+    meta: { login: true },
+    component: WriteBook
   },
 
 
