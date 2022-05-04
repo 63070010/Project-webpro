@@ -68,7 +68,7 @@ router.post('/user/signup', async (req, res, next) => {
 });
 router.get('/user/me', isLoggedIn, async (req, res, next) => {
     // req.user ถูก save ข้อมูล user จาก database ใน middleware function "isLoggedIn"
-    console.log(req.user.username)
+    
     res.json(req.user)
 });
 

@@ -1,9 +1,22 @@
 const express = require("express");
 const path = require("path")
 const pool = require("../config");
+const multer = require("multer");
 const { isLoggedIn } = require('../middlewares')
 router = express.Router();
-
+// SET STORAGE
+const storage = multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, "./static/uploads");
+  },
+  filename: function (req, file, callback) {
+    callback(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+const upload = multer({ storage: storage });
 
 // โปรโมชั่น
 router.get("/promotion_image", async function (req, res, next) {
@@ -28,17 +41,19 @@ router.get("/DetailsPromotion/:id", async function (req, res, next) {
 
 // โปรไฟล์
 router.get("/Profile", isLoggedIn, async function (req, res, next) {
-  const profile1 = await pool.query(`SELECT u.id, first_name, last_name, email, username, imageProfile,b.title,b.desc,b.type,b.image,b.status,b.price,b.id as 'Bookid'
-from users u
-join cart c
-on(u.id = c.user_id)
-join payment p
-using(cart_id)
-join cart_item ct
-using(cart_id)
-join book b
-on(b.id = ct.book_id)
-where u.id = ?`, [
+  const profile1 = await pool.query(`SELECT u.id, first_name, last_name, email, username, imageProfile,b.title,b.desc,b.type,b.image,b.status,b.price,b.id as 'Bookid', penname, bank_number, bank_name, Phonenumber, payment_id
+  from users u
+  left outer join cart c
+  on(u.id = c.user_id)
+  left outer join payment p
+  using(cart_id)
+  left outer join cart_item ct
+  using(cart_id)
+  left outer join book b
+  on(b.id = ct.book_id)
+  left outer join author a
+  on(u.id = a.user_id)
+  where u.id = ? AND p.payment_id != NULL` , [
     req.user.id,
 
   ]);
@@ -50,17 +65,36 @@ where u.id = ?`, [
     req.user.id,
 
   ]);
+  
+  const profile3 = await pool.query(`SELECT u.id, first_name, last_name, email, username, imageProfile,b.title,b.desc,b.type,b.image,b.status,b.price,b.id as 'Bookid', penname, bank_number, bank_name, Phonenumber, payment_id
+  from users u
+  left outer join cart c
+  on(u.id = c.user_id)
+  left outer join payment p
+  using(cart_id)
+  left outer join cart_item ct
+  using(cart_id)
+  left outer join book b
+  on(b.id = ct.book_id)
+  left outer join author a
+  on(u.id = a.user_id)
+  where u.id = ?`, [
+    req.user.id,
 
-  Promise.all([profile1, profile2])
+  ]);
+
+  Promise.all([profile1, profile2, profile3])
     .then((results) => {
       const [profilea, a] = results[0];
       const [profileb, b] = results[1];
+      const [profilec, c] = results[2];
       res.json({
         profile1: profilea,
         profile2: profileb,
+        profile3: profilec,
         error: null,
       });
-      console.log(profile2[0])
+      
     })
     .catch((err) => {
       return res.status(500).json(err);
@@ -101,7 +135,7 @@ router.get("/cart_check", isLoggedIn, async function (req, res, next) {
 
 // โชว์หนังสือในตระกร้า
 router.get("/cartitem/:id", isLoggedIn, async function (req, res, next) {
-  const cartitem = await pool.query("SELECT item_no, book_id, price, cart_id, total_price, promotion_id FROM ebook.cart_item join ebook.cart using(cart_id) where cart_id = ?;", [
+  const cartitem = await pool.query("SELECT item_no, book_id, price, cart_id, total_price, promotion_id FROM cart_item join cart using(cart_id) where cart_id = ?;", [
     req.params.id,]);
   return res.json(cartitem[0]);
 
@@ -122,7 +156,7 @@ from payment p)
 and u.id = ?`
     , [
       req.user.id]);
-
+  
   res.json(cartitem[0]);
 
 });
@@ -151,7 +185,55 @@ router.post('/addcart', isLoggedIn, async function (req, res, next) {
     console.log(err)
   }
 });
+// เพิ่มหนังสือใหม่
+router.post("/books", isLoggedIn, upload.array("myImage", 5), async function (req, res, next) {
+  const file = req.files;
+  
+  let pathArray = [];
+  if (!file) {
+    
+    return res.status(400).json({ message: "Please upload a file" });
+  }
+  
+  const title = req.body.title;
+  const type = req.body.type;
+  const price = req.body.price;
+  const desc = req.body.desc;
+  
 
+  // Begin transaction
+  const conn = await pool.getConnection();
+  await conn.beginTransaction();
+
+  try {
+    let results = await conn.query(
+      `INSERT INTO book (book.price, book.title, book.desc, book.type, book.publish_date, book.image, book.status, book.user_id, book.admin_id) VALUES (?, ?, ?, ?, current_timestamp, null, "succeed", ?, 7) `,
+      [price, title, desc, type, req.user.id]
+    );
+
+
+    const bookId = results[0].insertId;
+    
+    
+    req.files.forEach((file, index) => {
+      let path = [bookId, req.user.id, file.path.substring(6), index == 0 ? 1 : 0];
+      pathArray.push(path);
+    });
+    console.log(pathArray)
+    await conn.query(
+      "INSERT INTO images(book_id, user_id, file_path, cover) VALUES ?;",
+      [pathArray]
+    );
+
+    await conn.commit();
+    res.send("success!");
+  } catch (err) {
+    await conn.rollback();
+    return res.status(400).json(err);
+  } finally {
+    conn.release();
+  }
+});
 // เพิ่มหนังสือลงในตะกร้า
 router.post('/addbook/:id', isLoggedIn, async function (req, res, next) {
   try {
