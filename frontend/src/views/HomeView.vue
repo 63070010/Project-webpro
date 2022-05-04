@@ -2,7 +2,7 @@
   <div>
     <NavBar />
     <MyCarosel />
-    <WarnPay />
+    <WarnPay :order="order" :orderlist="orderlist" />
     <div class="columns hero is-fullheight">
       <div class="column mt-4">
         <section class="section">
@@ -47,7 +47,10 @@
                 <router-link :to="`/DetailsBook/${value.id}`">
                   <div class="card-image">
                     <figure class="image is-1by1">
-                      <img :src="imagePath(value.file_path)" alt="Placeholder image" />
+                      <img
+                        :src="imagePath(value.image)"
+                        alt="Placeholder image"
+                      />
                     </figure>
                   </div>
 
@@ -129,16 +132,40 @@ export default defineComponent({
       mybook: [],
       totalBook: [],
       numbookincart: 0,
+      order: [],
+      orderlist: [],
     };
   },
   async mounted() {
     await this.getBooks();
     await this.getcheck();
+    await this.getorder();
+    await this.getorderlist();
     this.totalBook = [...this.cart_item, ...this.mybook];
   },
   methods: {
-     getBooks() {
-       axios
+    async getorder() {
+      await axios
+        .get(`http://localhost:3000/order`)
+        .then((response) => {
+          this.order = response.data;
+        })
+        .catch((error) => {
+          this.error = error.response.data.message;
+        });
+    },
+    async getorderlist() {
+      await axios
+        .get(`http://localhost:3000/orderlist`)
+        .then((response) => {
+          this.orderlist = response.data;
+        })
+        .catch((error) => {
+          this.error = error.response.data.message;
+        });
+    },
+    getBooks() {
+      axios
         .get("http://localhost:3000", {
           params: {
             search: this.search,

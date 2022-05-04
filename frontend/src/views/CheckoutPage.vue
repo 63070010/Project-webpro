@@ -365,7 +365,7 @@ export default {
         .catch((err) => {
           console.log(err);
         });
-      this.Payment = false; // สร้างออเดอร์ต่อเลย
+      this.Payment = false;
     },
   },
 };

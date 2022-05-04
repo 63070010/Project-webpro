@@ -198,7 +198,6 @@ router.post("/books", isLoggedIn, upload.single("myImage"), async function (req,
   const price = req.body.price;
   const desc = req.body.desc;
 
-  console.log(file)
 
   // Begin transaction
   const conn = await pool.getConnection();
@@ -243,7 +242,6 @@ router.post('/addbook/:id', isLoggedIn, async function (req, res, next) {
     )
     res.json(rows2)
   } catch (err) {
-    console.log(err)
   }
 });
 // เพิ่มราคาหนังสือตามที่เอาลงตะกร้า
@@ -257,8 +255,6 @@ router.put('/totalprice', isLoggedIn, async function (req, res, next) {
     [rows3[0].total_price + req.body.price, req.body.cart_id]
 
   )
-  console.log(rows3[0])
-  console.log(rows3[0].total_price)
   res.json()
 });
 
@@ -318,14 +314,12 @@ router.put('/canceltPromotion', isLoggedIn, async function (req, res, next) {
 // แก้ไขราคาตามโปรโมชั่น
 router.put('/usedpronotion', isLoggedIn, upload.single("myImage"), async function (req, res, next) {
 
-  console.log(req.body.cart_id)
 
   const [row1, fields1] = await pool.query(
     'UPDATE cart SET total_price = ? WHERE cart_id = ?',
     [req.body.price, req.body.cart_id]
   )
 
-  console.log(req.file.path)
 
   const [row2, fields2] = await pool.query(
     "insert into `order` (cart_id, order_image, statement) values (?, ?, 'wait')",
@@ -335,7 +329,27 @@ router.put('/usedpronotion', isLoggedIn, upload.single("myImage"), async functio
 
 });
 
+// ออเดอร์
+router.get('/order', isLoggedIn, async function (req, res, next) {
 
+  const [row, fields] = await pool.query('SELECT * FROM `order` join cart c using(cart_id)  where c.user_id = ?',
+    req.user.id)
+  res.json(row)
+  console.log(row)
+});
+
+// รายการในออเดอร์
+router.get('/order', isLoggedIn, async function (req, res, next) {
+  const [row, fields] = await pool.query('SELECT * FROM `order` join cart c using(cart_id)  where c.user_id = ?',
+    req.user.id)
+  res.json(row)
+});
+
+router.get('/orderlist', isLoggedIn, async function (req, res, next) {
+  const [row, fields] = await pool.query('SELECT order_id, title  fROM `order` join cart c using(cart_id) join cart_item ct using(cart_id) join book b on (b.id = ct.book_id) where c.user_id = ?',
+    req.user.id)
+  res.json(row)
+});
 
 exports.router
   = router;

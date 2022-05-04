@@ -95,9 +95,6 @@ export default defineComponent({
         .get(`http://localhost:3000/DetailsBook/${id}`)
         .then((response) => {
           this.book = response.data;
-          console.log(this.book);
-          console.log(id);
-          console.log(this.book[0].book_id);
         })
         .catch((error) => {
           this.error = error.response.data.message;
