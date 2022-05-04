@@ -65,7 +65,7 @@ where u.id = ?`, [
     req.user.id,
 
   ]);
-  
+
   const profile3 = await pool.query(`SELECT u.id, first_name, last_name, email, username, imageProfile,b.title,b.desc,b.type,b.image,b.status,b.price,b.id as 'Bookid', penname, bank_number, bank_name, Phonenumber, payment_id
   from users u
   left outer join cart c
@@ -94,7 +94,7 @@ where u.id = ?`, [
         profile3: profilec,
         error: null,
       });
-      
+
     })
     .catch((err) => {
       return res.status(500).json(err);
@@ -156,7 +156,7 @@ from payment p)
 and u.id = ?`
     , [
       req.user.id]);
-  
+
   res.json(cartitem[0]);
 
 });
@@ -186,44 +186,39 @@ router.post('/addcart', isLoggedIn, async function (req, res, next) {
   }
 });
 // เพิ่มหนังสือใหม่
-router.post("/books", isLoggedIn, upload.array("myImage", 5), async function (req, res, next) {
-  const file = req.files;
-  
-  let pathArray = [];
+router.post("/books", isLoggedIn, upload.single("myImage"), async function (req, res, next) {
+  const file = req.file;
   if (!file) {
-    
+
     return res.status(400).json({ message: "Please upload a file" });
   }
-  
+
   const title = req.body.title;
-  const type = req.body.type;
+  const type = req.body.type.join(', ');
   const price = req.body.price;
   const desc = req.body.desc;
-  
+
+  console.log(file)
 
   // Begin transaction
   const conn = await pool.getConnection();
   await conn.beginTransaction();
 
   try {
+
     let results = await conn.query(
-      `INSERT INTO book (book.price, book.title, book.desc, book.type, book.publish_date, book.image, book.status, book.user_id, book.admin_id) VALUES (?, ?, ?, ?, current_timestamp, null, "succeed", ?, 7) `,
-      [price, title, desc, type, req.user.id]
+      `INSERT INTO book (book.price, book.title, book.desc, book.type, book.publish_date, book.image, book.status, book.user_id, book.admin_id) VALUES (?, ?, ?, ?, current_timestamp, ?, "succeed", ?, 7) `,
+      [price, title, desc, type, file.path, req.user.id]
     );
 
 
-    const bookId = results[0].insertId;
-    
-    
-    req.files.forEach((file, index) => {
-      let path = [bookId, req.user.id, file.path.substring(6), index == 0 ? 1 : 0];
-      pathArray.push(path);
-    });
-    console.log(pathArray)
-    await conn.query(
-      "INSERT INTO images(book_id, user_id, file_path, cover) VALUES ?;",
-      [pathArray]
-    );
+    // const bookId = results[0].insertId;
+    // console.log(bookId)
+
+    // await conn.query(
+    //   "INSERT INTO images(book_id, user_id, file_path, cover) VALUES ?;",
+    //   [pathArray]
+    // );
 
     await conn.commit();
     res.send("success!");
@@ -321,10 +316,20 @@ router.put('/canceltPromotion', isLoggedIn, async function (req, res, next) {
 });
 
 // แก้ไขราคาตามโปรโมชั่น
-router.put('/usedpronotion', isLoggedIn, async function (req, res, next) {
-  const [row, fields] = await pool.query(
-    'UPDATE `cart` SET total_price = ? WHERE cart_id = ?',
+router.put('/usedpronotion', isLoggedIn, upload.single("myImage"), async function (req, res, next) {
+
+  console.log(req.body.cart_id)
+
+  const [row1, fields1] = await pool.query(
+    'UPDATE cart SET total_price = ? WHERE cart_id = ?',
     [req.body.price, req.body.cart_id]
+  )
+
+  console.log(req.file.path)
+
+  const [row2, fields2] = await pool.query(
+    "insert into `order` (cart_id, order_image, statement) values (?, ?, 'wait')",
+    [req.body.cart_id, req.file.path]
   )
   res.json(req.body.price)
 

@@ -161,7 +161,11 @@
                 <div class="card large">
                   <router-link :to="`/DetailsBook/${card.Bookid}`">
                     <div class="card-image image is-4by5">
-                      <img :src="card.image" alt="Image" />
+                      <img
+                        :src="'http://localhost:3000/' + card.image"
+                        alt="Image"
+                        style="object-fit: cover"
+                      />
                     </div>
                     <div class="card-content" style="height: 250px">
                       <div class="media">
@@ -318,15 +322,12 @@
               >
               <div class="file">
                 <label class="file-label">
-                  
                   <span class="file-cta">
                     <span class="file-icon">
                       <i class="fas fa-upload"></i>
                     </span>
                     <span>
                       <input
-                        
-                        multiple
                         type="file"
                         accept="image/png, image/jpeg, image/webp"
                         @change="selectImages"
@@ -349,11 +350,8 @@
             </div>
           </section>
           <footer class="modal-card-foot">
-            <button
-              class="button is-success"
-              @click="submitBook"
-            >
-              บักทึก
+            <button class="button is-success" @click="submitBook">
+              บันทึก
             </button>
             <button class="button" @click="Add_Book = false">ยกเลิก</button>
           </footer>
@@ -414,21 +412,21 @@ export default {
     },
     selectImages(event) {
       this.images = event.target.files;
-      console.log(this.images);
-      console.log(this.Book_name)
     },
     submitBook() {
       let formData = new FormData();
       formData.append("title", this.Book_name);
+      console.log(this.types);
       this.types.forEach((type) => {
         formData.append("type", type);
       });
       formData.append("price", this.price);
-      formData.append("myImage", this.images);
+      formData.append("myImage", this.images[0]);
       formData.append("desc", this.detail_book);
-       axios
+
+      axios
         .post("http://localhost:3000/books", formData)
-        .then((res) => this.push({ name: 'Profile_user' }))
+        .then(() => this.push({ name: "Profile_user" }))
         .catch((e) => console.log(e.response.data));
     },
 

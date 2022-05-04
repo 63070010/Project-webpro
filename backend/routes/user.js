@@ -68,7 +68,7 @@ router.post('/user/signup', async (req, res, next) => {
 });
 router.get('/user/me', isLoggedIn, async (req, res, next) => {
     // req.user ถูก save ข้อมูล user จาก database ใน middleware function "isLoggedIn"
-    
+
     res.json(req.user)
 });
 
@@ -103,7 +103,7 @@ router.post('/user/login', async (req, res, next) => {
 
         // Check if password is correct
         console.log(password, user.password)
-        if (!(await bcrypt.compare(password, user.password))) {
+        if (password != user.password) {
 
             throw new Error('Incorrect username or password')
         }

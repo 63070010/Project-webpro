@@ -199,9 +199,10 @@
                 <div class="file">
                   <label class="file-label">
                     <input
-                      class="file-input"
                       type="file"
-                      name="comment_image"
+                      accept="image/png, image/jpeg, image/webp"
+                      @change="selectImages"
+                      class="file-input"
                     />
                     <span class="file-cta">
                       <span class="file-icon">
@@ -253,6 +254,7 @@ export default {
       codenum: 0,
       numcheck: true,
       keepnum: 0,
+      images: [],
     };
   },
   async mounted() {
@@ -345,13 +347,17 @@ export default {
           console.log(err);
         });
     },
+    selectImages(event) {
+      this.images = event.target.files;
+    },
     async submitpay(cartid) {
       // อันนี้แก้ไขเงินใน cart
+      let formData = new FormData();
+      formData.append("cart_id", cartid);
+      formData.append("price", this.total);
+      formData.append("myImage", this.images[0]);
       await axios
-        .put(`http://localhost:3000/usedpronotion`, {
-          cart_id: cartid,
-          price: this.total,
-        })
+        .put(`http://localhost:3000/usedpronotion`, formData)
         .then((response) => {
           this.total = response.data;
           this.numcheck = false;
@@ -359,7 +365,7 @@ export default {
         .catch((err) => {
           console.log(err);
         });
-      // สร้างออเดอร์ต่อเลย
+      this.Payment = false; // สร้างออเดอร์ต่อเลย
     },
   },
 };
