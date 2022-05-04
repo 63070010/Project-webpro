@@ -20,32 +20,32 @@ const routes = [
   {
     path: '/register',
     name: 'register',
-    meta: { guess: true },
+    
     component: RegiSter
   }
   ,
   {
     path: '/login',
     name: 'login',
-    meta: { guess: true },
+    
     component: LogIn
   },
   {
     path: '/Profile_user/:id',
     name: 'Profile_user',
-    meta: { login: true },
+    
     component: Profile_user
   },
   {
     path: '/DetailsBook/:id',
     name: 'DetailsBook',
-    meta: { login: true },
+    
     component: DetailsBook
   },
   {
     path: '/Cart_Book',
     name: 'Cart_Book',
-    meta: { login: true },
+    
     component: Cart_Book
   },
   {
@@ -58,31 +58,31 @@ const routes = [
   {
     path: '/AdminPage',
     name: 'AdminPage',
-    meta: { login: true },
+    
     component: AdminPage
   },
   {
     path: '/CheckoutPage/:id',
     name: 'CheckoutPage',
-    meta: { login: true },
+    
     component: CheckoutPage
   },
   {
     path: '/ReadBook',
     name: 'ReadBook',
-    meta: { login: true },
+    
     component: ReadBook
   },
   {
     path: '/WriteBook',
     name: 'WriteBook',
-    meta: { login: true },
+    
     component: WriteBook
   }, 
   {
     path: '/ReadBook',
     name: 'ReadBook',
-    meta: { login: true },
+    
     component: WriteBook
   },
 
