@@ -178,9 +178,9 @@ export default defineComponent({
           console.log(err);
         });
     },
-    imagePath(file_path) {
-      if (file_path) {
-        return "http://localhost:3000/" + file_path;
+    imagePath(image) {
+      if (image) {
+        return "http://localhost:3000/" + image;
       } else {
         return "https://bulma.io/images/placeholders/640x360.png";
       }
