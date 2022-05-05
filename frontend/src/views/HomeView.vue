@@ -50,6 +50,7 @@
                       <img
                         :src="imagePath(value.image)"
                         alt="Placeholder image"
+                        style="object-fit: cover"
                       />
                     </figure>
                   </div>
@@ -126,7 +127,9 @@ export default defineComponent({
     return {
       books: [],
       search: "",
-      cart: {},
+      cart: {
+        0: {},
+      },
       cart_item: [],
       pay: {},
       mybook: [],
@@ -149,6 +152,9 @@ export default defineComponent({
         .get(`http://localhost:3000/order`)
         .then((response) => {
           this.order = response.data;
+          console.log(response.data);
+
+          console.log(this.order);
         })
         .catch((error) => {
           this.error = error.response.data.message;
@@ -159,6 +165,9 @@ export default defineComponent({
         .get(`http://localhost:3000/orderlist`)
         .then((response) => {
           this.orderlist = response.data;
+          console.log(response.data);
+
+          console.log(this.orderlist);
         })
         .catch((error) => {
           this.error = error.response.data.message;
@@ -192,14 +201,16 @@ export default defineComponent({
           this.cart = response.data.cart;
           this.pay = response.data.payment;
           this.mybook = response.data.mybook;
-          console.log(this.mybook);
-          console.log(this.pay);
+
           console.log(this.cart);
-          if (this.cart.length == 0 || this.cart.length == this.pay.length) {
+          console.log(this.pay);
+          console.log(this.mybook);
+          if (this.cart.length == 0) {
             axios
               .post(`http://localhost:3000/addcart`)
               .then((response) => {
                 this.cart.push(response.data);
+                console.log(this.cart);
               })
               .catch((error) => {
                 this.error = error.response.data.message;
@@ -226,7 +237,6 @@ export default defineComponent({
     async cardpush(book) {
       await axios
         .post(`http://localhost:3000/addbook/${book.id}`, {
-          cart_id: this.cart[this.cart.length - 1].cart_id,
           price: book.price,
         })
         .then((response) => {
@@ -240,7 +250,6 @@ export default defineComponent({
         });
       await axios
         .put(`http://localhost:3000/totalprice`, {
-          cart_id: this.cart[this.cart.length - 1].cart_id,
           price: book.price,
         })
         .then(() => {})

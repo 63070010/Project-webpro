@@ -159,7 +159,7 @@
                 class="column is-3"
               >
                 <div class="card large">
-                  <router-link :to="`/DetailsBook/${card.Bookid}`">
+                  <router-link :to="`/DetailsBook/${card.id}`">
                     <div class="card-image image is-4by5">
                       <img
                         :src="'http://localhost:3000/' + card.image"
@@ -167,62 +167,63 @@
                         style="object-fit: cover"
                       />
                     </div>
-                    <div class="card-content" style="height: 250px">
-                      <div class="media">
-                        <div class="media-content">
-                          <p class="title is-5 no-padding">
-                            {{ card.title }}
-                          </p>
-                          ชื่อนามปากของคุณ:
-                          <span class="title is-6" style="color: #bab2b5">
-                            {{ card.penname }}</span
-                          >
-                          <br />
-                          ปรเภทหนังสือที่เลือกไว้:
-                          <span
-                            class="is-size-6 text-right"
-                            style="color: #bab2b5"
-                            v-for="(value, index) in card.type"
-                            :key="index"
-                          >
-                            {{ value }}
-                          </span>
+                  </router-link>
+                  <div class="card-content" style="height: 250px">
+                    <div class="media">
+                      <div class="media-content">
+                        <p class="title is-5 no-padding">
+                          {{ card.title }}
+                        </p>
+                        ชื่อนามปากของคุณ:
+                        <span class="title is-6" style="color: #bab2b5">
+                          {{ card.penname }}</span
+                        >
+                        <br />
+                        ปรเภทหนังสือที่เลือกไว้:
+                        <span
+                          class="is-size-6 text-right"
+                          style="color: #bab2b5"
+                          v-for="(value, index) in card.type"
+                          :key="index"
+                        >
+                          {{ value }}
+                        </span>
 
-                          <!-- คือ มันจะต้องมี 5 stage เพื่อเช็ค แบบ เขียนเสรจแล้วต่อไปก้ลงทะเบียน ลงทะเบียนเสรจแล้วก้ ไป รอ พอ อนุมัติ แล้วก้ลงขาย และถ้าหาก ไม่อนุมัติก้กลับมาเป็นอันแรก"-->
+                        <!-- คือ มันจะต้องมี 5 stage เพื่อเช็ค แบบ เขียนเสรจแล้วต่อไปก้ลงทะเบียน ลงทะเบียนเสรจแล้วก้ ไป รอ พอ อนุมัติ แล้วก้ลงขาย และถ้าหาก ไม่อนุมัติก้กลับมาเป็นอันแรก"-->
 
-                          <br />ราคาที่เลือก:
-                          <span style="color: #bab2b5">{{ card.price }}</span>
-                          <br />
-                          สถานะหนังสือ:
-                          <span
-                            style="color: #bab2b5"
-                            v-if="card.status == 'unready'"
-                            >ยังเขียนไม่เสร็จ</span
-                          >
-                          <span
-                            style="color: #bab2b5"
-                            v-if="card.status == 'ready'"
-                            >เขียนเสร็จแล้ว</span
-                          >
-                          <span
-                            style="color: #bab2b5"
-                            v-if="card.status == 'wait'"
-                            >รออนุมัติ</span
-                          >
-                          <span
-                            style="color: #bab2b5"
-                            v-if="card.status == 'succeed'"
-                            >อนุมัติสำเร็จแล้ว</span
-                          >
-                          <span
-                            style="color: #bab2b5"
-                            v-if="card.status == 'not_succeed'"
-                            >ไม่อนุมัติ</span
-                          >
-                        </div>
+                        <br />ราคาที่เลือก:
+                        <span style="color: #bab2b5">{{ card.price }}</span>
+                        <br />
+                        สถานะหนังสือ:
+                        <span
+                          style="color: #bab2b5"
+                          v-if="card.status == 'unready'"
+                          >ยังเขียนไม่เสร็จ</span
+                        >
+                        <span
+                          style="color: #bab2b5"
+                          v-if="card.status == 'ready'"
+                          >เขียนเสร็จแล้ว</span
+                        >
+                        <span
+                          style="color: #bab2b5"
+                          v-if="card.status == 'wait'"
+                          >รออนุมัติ</span
+                        >
+                        <span
+                          style="color: #bab2b5"
+                          v-if="card.status == 'succeed'"
+                          >อนุมัติสำเร็จแล้ว</span
+                        >
+                        <span
+                          style="color: #bab2b5"
+                          v-if="card.status == 'not_succeed'"
+                          >ไม่อนุมัติ</span
+                        >
                       </div>
                     </div>
-                  </router-link>
+                  </div>
+
                   <footer
                     class="card-footer"
                     v-if="

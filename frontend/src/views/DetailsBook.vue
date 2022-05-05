@@ -7,7 +7,7 @@
           <div class="columns is-vcentered">
             <div class="column is-4">
               <figure class="image is-1by1">
-                <img :src="book[0].image" />
+                <img :src="'http://localhost:3000/' + book[0].image" />
               </figure>
             </div>
             <div class="column is-6 is-offset-1">
@@ -25,8 +25,9 @@
                   {{ value }}
                 </span>
               </p>
-              <p class="subtitle is-6">
-                วันที่วางขาย : {{ book[0].publish_date }}
+              <p class="subtitle is-6" v-if="book[0].publish_date != null">
+                วันที่วางขาย :
+                {{ new Date(book[0].publish_date).toLocaleString() }}
               </p>
               <p class="subtitle is-6">ราคา : {{ book[0].price }} บาท</p>
 

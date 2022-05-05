@@ -39,14 +39,17 @@
           <div class="is-multiline columns is-variable is-2">
             <div
               class="column is-one-quarter"
-              v-for="value in books"
+              v-for="(value, indexmain) in books"
               :key="value.id"
             >
               <div class="card">
-                <router-link to="/DetailsBook">
+                <router-link :to="`/DetailsBook/${value.id}`">
                   <div class="card-image">
                     <figure class="image is-1by1">
-                      <img :src="value.image" alt="Placeholder image" />
+                      <img
+                        :src="'http://localhost:3000/' + value.image"
+                        alt="Placeholder image"
+                      />
                     </figure>
                   </div>
 
@@ -71,7 +74,7 @@
                           v-for="(value, index) in value.type"
                           :key="index"
                         >
-                          {{ value }} &nbsp;
+                          {{ value }}
                         </span>
                       </div>
                     </div>
@@ -84,8 +87,16 @@
                 </div>
                 <br />
                 <footer class="card-footer">
-                  <a class="card-footer-item" @click="allow(value.id)">อนุมัติ</a>
-                  <a class="card-footer-item">ไม่อนุมัติ</a>
+                  <a
+                    class="card-footer-item"
+                    @click="submit(value.id, indexmain)"
+                    >อนุมัติ</a
+                  >
+                  <a
+                    class="card-footer-item"
+                    @click="unsubmit(value.id, indexmain)"
+                    >ไม่อนุมัติ</a
+                  >
                 </footer>
               </div>
             </div>
@@ -105,44 +116,48 @@
           <div class="is-multiline columns is-variable is-2">
             <div
               class="column is-one-quarter"
-              v-for="value in books"
+              v-for="(value, indexmain) in booksdelete"
               :key="value.id"
             >
               <div class="card">
-                <router-link to="/DetailsBook">
+                <router-link :to="`/DetailsBook/${value.id}`">
                   <div class="card-image">
                     <figure class="image is-1by1">
-                      <img :src="value.image" alt="Placeholder image" />
+                      <img
+                        :src="'http://localhost:3000/' + value.image"
+                        style="object-fit: cover"
+                        alt="Placeholder image"
+                      />
                     </figure>
                   </div>
+                </router-link>
+                <div class="card-content" style="height: 160px">
+                  <div class="media">
+                    <div class="media-content" style="color: #edc7b7">
+                      <p
+                        class="is-size-6 has-text-centered subtitle"
+                        style="color: #edc7b7"
+                      >
+                        {{ value.title }}
+                      </p>
 
-                  <div class="card-content" style="height: 160px">
-                    <div class="media">
-                      <div class="media-content" style="color: #edc7b7">
-                        <p
-                          class="is-size-6 has-text-centered subtitle"
-                          style="color: #edc7b7"
-                        >
-                          {{ value.Book_name }}
-                        </p>
+                      <p class="is-size-7" style="color: #bab2b5">
+                        By {{ value.penname }}
+                      </p>
+                      type:
 
-                        <p class="is-size-7" style="color: #bab2b5">
-                          By {{ value.penname }}
-                        </p>
-                        type:
-
-                        <span
-                          class="is-size-7 text-right"
-                          style="color: #bab2b5"
-                          v-for="(value, index) in value.type"
-                          :key="index"
-                        >
-                          {{ value }} &nbsp;
-                        </span>
-                      </div>
+                      <span
+                        class="is-size-7 text-right"
+                        style="color: #bab2b5"
+                        v-for="(value, index) in value.type"
+                        :key="index"
+                      >
+                        {{ value }}
+                      </span>
                     </div>
                   </div>
-                </router-link>
+                </div>
+
                 <div class="level-item has-text-centered">
                   <button class="button is-light" style="color: #123c69">
                     อ่านเนื้อหาหนังสือ
@@ -150,8 +165,16 @@
                 </div>
                 <br />
                 <footer class="card-footer">
-                  <a class="card-footer-item">ยืนยัน</a>
-                  <a class="card-footer-item">ไม่ยืนยัน </a>
+                  <a
+                    class="card-footer-item"
+                    @click="submitdelete(value.id, indexmain)"
+                    >ยืนยัน</a
+                  >
+                  <a
+                    class="card-footer-item"
+                    @click="unsubmit(value.id, indexmain)"
+                    >ไม่ยืนยัน
+                  </a>
                 </footer>
               </div>
             </div>
@@ -171,30 +194,46 @@
             <article class="media">
               <div class="media-left">
                 <figure>
-                  <img :src="box.image_check" class="image is-64x64" />
+                  <img
+                    :src="'http://localhost:3000/' + box.order_image"
+                    alt="Image"
+                    style="object-fit: cover"
+                    class="image is-128x128"
+                  />
                 </figure>
               </div>
               <div class="media-content">
                 <div class="content">
                   <p>
-                    <strong>ออเดอร์ที่ {{ box.number_order }}</strong>
+                    <strong>ออเดอร์ที่ {{ box.order_id }}</strong>
                     <br />
                     รายการหนังสือ:
-
                     <span
-                      v-for="(value, index) in box.list_book"
+                      v-for="(value, index) in orderlist"
                       v-bind:key="index"
                     >
-                      {{ value }} &ensp;</span
-                    ><br />ราคาทั้งหมด: {{ box.total_pice }}
+                      <span v-if="value.order_id == box.order_id">
+                        {{ value.title }}&nbsp;
+                      </span> </span
+                    ><br />ราคาทั้งหมด: {{ box.total_price }}
                   </p>
                 </div>
                 <div class="level-right">
                   <div class="level-item">
-                    <button class="button is-light">ยืนยัน</button>
+                    <button
+                      class="button is-light"
+                      @click="submitorder(box, index)"
+                    >
+                      ยืนยัน
+                    </button>
                   </div>
                   <div class="level-item">
-                    <button class="button is-light">ไม่ยืนยัน</button>
+                    <button
+                      class="button is-light"
+                      @click="unsubmitorder(box, index)"
+                    >
+                      ไม่ยืนยัน
+                    </button>
                   </div>
                 </div>
               </div>
@@ -343,37 +382,81 @@ export default {
       Add_promotion: false,
       cancel_promotion: false,
       books: [],
+      booksdelete: [],
+      order: [],
+      orderlist: [],
     };
   },
   async mounted() {
     await this.getPendingBooks();
-    
   },
   methods: {
     async getPendingBooks() {
       await axios
         .get("http://localhost:3000/adminPage")
         .then((response) => {
-          this.books = response.data;
-          console.log(this.books)
+          this.books = response.data.adminsell;
+          this.booksdelete = response.data.admindelete;
+          this.order = response.data.waitbuy;
+          this.orderlist = response.data.waitbuylist;
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    async allow(bookId){
+    async submit(bookId, index) {
       await axios
-        .get(`http://localhost:3000/allowBook/${bookId}`)
-        .then((response) => {
-          this.books = response.data;
-          console.log(this.books)
+        .put(`http://localhost:3000/submit/${bookId}`)
+        .then(() => {
+          this.books.splice(index, 1);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    async unsubmit(bookId, index) {
+      await axios
+        .put(`http://localhost:3000/unsubmit/${bookId}`)
+        .then(() => {
+          this.books.splice(index, 1);
         })
         .catch((err) => {
           console.log(err);
         });
     },
 
-    
+    async submitdelete(bookId, index) {
+      await axios
+        .delete(`http://localhost:3000/submitdelete/${bookId}`)
+        .then(() => {
+          this.booksdelete.splice(index, 1);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    async submitorder(box, index) {
+      await axios
+        .post(`http://localhost:3000/submitorder/${box.order_id}`, {
+          cart_id: box.cart_id,
+        })
+        .then(() => {
+          this.order.splice(index, 1);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    async unsubmitorder(box, index) {
+      await axios
+        .put(`http://localhost:3000/unsubmitorder/${box.order_id}`)
+        .then(() => {
+          this.order.splice(index, 1);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
 };
 </script>

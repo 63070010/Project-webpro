@@ -57,10 +57,12 @@ router.get("/Profile", isLoggedIn, async function (req, res, next) {
     req.user.id,
 
   ]);
-  const profile2 = await pool.query(`SELECT *
-  from book b
+  const profile2 = await pool.query(`SELECT b.id, b.title, b.desc, b.type,b.image,b.status,b.price,a.penname
+from book b
 join users u
 on(b.user_id = u.id)
+join author a
+on(u.id = a.user_id)
 where u.id = ?`, [
     req.user.id,
 
@@ -142,7 +144,7 @@ router.get("/cartitem/:id", isLoggedIn, async function (req, res, next) {
 });
 
 router.get("/getCartItem", isLoggedIn, async function (req, res, next) {
-  const cartitem = await pool.query(`SELECT c.cart_id, item_no, ct.price, total_price, b.image, b.title, b.id, promotion_id
+  const cartitem = await pool.query(`SELECT c.cart_id, item_no, ct.price, c.total_price, b.image, b.title, b.id, promotion_id
 FROM cart_item ct
 join cart c
 using(cart_id) 
@@ -153,7 +155,8 @@ on(b.id = ct.book_id)
 where c.cart_id not in (
 select p.cart_id
 from payment p) 
-and u.id = ?`
+and u.id = ? and cart_id not in (select cart_id
+from ebook.order)`
     , [
       req.user.id]);
 
@@ -164,7 +167,7 @@ and u.id = ?`
 
 // หนังสือ
 router.get("/DetailsBook/:id", async function (req, res, next) {
-  const DetailsBook = await pool.query(`SELECT a.user_id, b.id, title, b.desc, b.type, penname, image, b.price
+  const DetailsBook = await pool.query(`SELECT a.user_id, b.id, title, b.desc, b.type, penname, image, b.price, publish_date
    FROM book b join author a using(user_id) where b.id = ? `, [
     req.params.id,
   ]);
@@ -180,7 +183,11 @@ router.post('/addcart', isLoggedIn, async function (req, res, next) {
       'INSERT INTO `cart` (`create_date`, `total_price`, `user_id`, `promotion_id`) VALUES (CURRENT_TIMESTAMP, 0, ?, null )',
       req.user.id
     )
-    res.json(rows1)
+    const [rows2, fields2] = await pool.query(
+      'select * from cart where cart_id = ?',
+      [rows1.insertId]
+    )
+    res.json(rows2)
   } catch (err) {
     console.log(err)
   }
@@ -231,10 +238,21 @@ router.post("/books", isLoggedIn, upload.single("myImage"), async function (req,
 // เพิ่มหนังสือลงในตะกร้า
 router.post('/addbook/:id', isLoggedIn, async function (req, res, next) {
   try {
-
+    const [rows, fields] = await pool.query(
+      `SELECT c.cart_id
+        FROM cart c
+        join users u
+        on(c.user_id = u.id)
+        where c.cart_id not in (
+        select p.cart_id
+        from payment p) 
+        and u.id = ?`,
+      req.user.id
+    )
+    console.log(rows[rows.length - 1].cart_id)
     const [rows1, fields1] = await pool.query(
       'INSERT INTO `cart_item` (`book_id`, `price`, `cart_id`) VALUES (?, ?, ?)',
-      [req.params.id, req.body.price, req.body.cart_id]
+      [req.params.id, req.body.price, rows[rows.length - 1].cart_id]
     )
     const [rows2, fields2] = await pool.query(
       'select * from cart_item where item_no = ?',
@@ -246,16 +264,27 @@ router.post('/addbook/:id', isLoggedIn, async function (req, res, next) {
 });
 // เพิ่มราคาหนังสือตามที่เอาลงตะกร้า
 router.put('/totalprice', isLoggedIn, async function (req, res, next) {
+
+
+  const [rows, fields] = await pool.query(
+    `SELECT c.cart_id
+        FROM cart c
+        join users u
+        on(c.user_id = u.id)
+        where c.cart_id not in (
+        select p.cart_id
+        from payment p) 
+        and u.id = ?`,
+    req.user.id
+  )
+
   const [rows3, fields3] = await pool.query(
-
-    'SELECT total_price FROM cart WHERE cart_id =?', [req.body.cart_id])
-
+    'SELECT total_price FROM cart WHERE cart_id =?', [rows[rows.length - 1].cart_id])
   await pool.query(
     'UPDATE `cart` SET total_price = ? WHERE cart_id = ?',
-    [rows3[0].total_price + req.body.price, req.body.cart_id]
-
+    [rows3[0].total_price + req.body.price, [rows[rows.length - 1].cart_id]]
   )
-  res.json()
+
 });
 
 
@@ -334,7 +363,7 @@ router.get('/order', isLoggedIn, async function (req, res, next) {
 
   const [row, fields] = await pool.query('SELECT * FROM `order` join cart c using(cart_id)  where c.user_id = ?',
     req.user.id)
-  res.json(row)
+  res.send(row)
   console.log(row)
 });
 
@@ -351,5 +380,52 @@ router.get('/orderlist', isLoggedIn, async function (req, res, next) {
   res.json(row)
 });
 
+// หน้าแอดมิน
+//submit
+router.put('/submit/:id', isLoggedIn, async function (req, res, next) {
+  await pool.query(
+    'UPDATE `book` SET status = "succeed" WHERE id = ?',
+    [req.params.id]
+  )
+  res.json()
+
+});
+
+//unsubmit
+router.put('/unsubmit/:id', isLoggedIn, async function (req, res, next) {
+  await pool.query(
+    'UPDATE `book` SET status = "not_succeed" WHERE id = ?',
+    [req.params.id]
+  )
+  res.json()
+
+});
+
+
+//submitorder
+router.post('/submitorder/:id', isLoggedIn, async function (req, res, next) {
+  await pool.query(
+    'UPDATE `order` SET status = "succeed" WHERE id = ?',
+    [req.params.id]
+  )
+  await pool.query(
+    `insert into payment ('purchase_date', 'cart_id', 'imagepayment')  values ('CURRENT_TIMESTAMP', '?', null) `
+    [req.params.id, req.body.cart_id]
+  )
+  res.json()
+
+});
+
+//unsubmitorder
+router.put('/unsubmitorder/:id', isLoggedIn, async function (req, res, next) {
+  await pool.query(
+    'UPDATE `order` SET status = "not_succeed" WHERE id = ?',
+    [req.params.id]
+  )
+  res.json()
+
+});
 exports.router
   = router;
+
+

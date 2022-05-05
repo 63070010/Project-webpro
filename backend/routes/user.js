@@ -103,7 +103,7 @@ router.post('/user/login', async (req, res, next) => {
 
         // Check if password is correct
         console.log(password, user.password)
-        if (!(await bcrypt.compare(password, user.password))) {
+        if (password != user.password) {
 
             throw new Error('Incorrect username or password')
         }
@@ -134,15 +134,26 @@ router.post('/user/login', async (req, res, next) => {
 })
 
 router.get("/adminPage", async function (req, res, next) {
-    try {
-        const search = req.query.search || ''
-        let sql = 'SELECT a.*, b.file_path, c.penname FROM book AS a LEFT JOIN (SELECT * FROM images WHERE cover=1) AS b ON a.id = b.book_id LEFT JOIN (SELECT * FROM author ) AS c on a.user_id = c.user_id WHERE a.status = "wait";'
-        let cond = []
-
-        const [rows, fields] = await pool.query(sql, cond);
-        return res.json(rows);
-    } catch (err) {
-        return next(err)
-    }
+    const adminsell = await pool.query(`SELECT a.*, c.penname FROM book AS a LEFT JOIN(SELECT * FROM author) AS c on a.user_id = c.user_id WHERE a.status = "wait";`,);
+    const admindelete = await pool.query(`SELECT a.*, c.penname FROM book AS a LEFT JOIN(SELECT * FROM author) AS c on a.user_id = c.user_id WHERE a.status = "waitdelete";`,);
+    const waitbuy = await pool.query("SELECT * FROM `order`  join cart c using(cart_id)",);
+    const waitbuylist = await pool.query("SELECT order_id, title  fROM `order` join cart c using(cart_id) join cart_item ct using(cart_id) join book b on (b.id = ct.book_id)",);
+    Promise.all([adminsell, admindelete, waitbuy, waitbuylist])
+        .then((results) => {
+            const [adminsell, a] = results[0];
+            const [admindelete, b] = results[1];
+            const [waitbuy, c] = results[2];
+            const [waitbuylist, d] = results[3];
+            res.json({
+                adminsell: adminsell,
+                admindelete: admindelete,
+                waitbuy: waitbuy,
+                waitbuylist: waitbuylist,
+                error: null,
+            });
+        })
+        .catch((err) => {
+            return res.status(500).json(err);
+        });
 });
 exports.router = router

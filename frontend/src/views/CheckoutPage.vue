@@ -142,7 +142,12 @@
             <div class="box" v-for="card in Cart_item" v-bind:key="card.id">
               <article class="media" v-if="Cart_item.length > 0">
                 <div class="media-left">
-                  <img :src="card.image" alt="Image" class="image is-64x64" />
+                  <img
+                    :src="'http://localhost:3000/' + card.image"
+                    alt="Image"
+                    style="object-fit: cover"
+                    class="image is-64x64"
+                  />
                 </div>
                 <div class="media-content">
                   <div class="content">
@@ -272,6 +277,7 @@ export default {
           this.Cart_item = response.data;
           this.total = response.data[0].total_price;
           this.keepnum = response.data[0].total_price;
+          console.log(this.Cart_item);
         })
         .catch((err) => {
           console.log(err);
@@ -280,6 +286,7 @@ export default {
         .get(`http://localhost:3000/promotion_image`)
         .then((response) => {
           this.promotioncheck = response.data;
+          console.log(this.promotioncheck);
         })
         .catch((error) => {
           this.error = error.response.data.message;
@@ -300,15 +307,28 @@ export default {
           .catch((err) => {
             console.log(err);
           });
+        alert("ใช้โค้ดสำเร็จแล้ว");
+        if (
+          this.checkcode == 1 &&
+          this.promotioncheck[this.codenum - 1].promotioncol == ">" &&
+          this.total >= this.promotioncheck[this.codenum - 1].amont
+        ) {
+          console.log("1");
+          this.total =
+            (this.total *
+              this.promotioncheck[this.codenum - 1].percentpromotion) /
+            100;
+        } else if (
+          this.checkcode == 1 &&
+          this.promotioncheck[this.codenum - 1].promotioncol == "<" &&
+          this.total <= this.promotioncheck[this.codenum - 1].amont
+        ) {
+          console.log("1");
 
-        if (this.codenum == 1 && this.total >= 1000) {
-          this.total = (this.total * 90) / 100;
-        } else if (this.codenum == 2 && this.total >= 1500) {
-          this.total = (this.total * 85) / 100;
-        } else if (this.codenum == 3 && this.total <= 300) {
-          this.total = (this.total * 50) / 100;
-        } else if (this.codenum == 4 && this.total >= 2200) {
-          this.total = (this.total * 80) / 100;
+          this.total =
+            (this.total *
+              this.promotioncheck[this.codenum - 1].percentpromotion) /
+            100;
         } else {
           await axios
             .put(`http://localhost:3000/canceltPromotion`, {
@@ -325,7 +345,6 @@ export default {
               console.log(err);
             });
         }
-        alert("ใช้โค้ดสำเร็จแล้ว");
       } else {
         alert("โค้ดไม่ถูกต้อง");
         this.Promotion = "";
@@ -365,6 +384,15 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+      await axios
+        .post(`http://localhost:3000/addcart`)
+        .then(() => {
+          window.location.href = "/";
+        })
+        .catch((error) => {
+          this.error = error.response.data.message;
+        });
+
       this.Payment = false;
     },
   },

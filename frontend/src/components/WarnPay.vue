@@ -42,8 +42,8 @@
                         v-for="(value, index) in orderlist"
                         v-bind:key="index"
                       >
-                        <span>
-                          {{ index + 1 + "." }} {{ value.title }}&nbsp;
+                        <span v-if="value.order_id == box.order_id">
+                          {{ value.title }}&nbsp;
                         </span>
                       </span>
 

@@ -21,7 +21,12 @@
           >
             <article class="media">
               <div class="media-left">
-                <img :src="cart.image" alt="Image" class="image is-128x128" />
+                <img
+                  :src="'http://localhost:3000/' + cart.image"
+                  alt="Image"
+                  style="object-fit: cover"
+                  class="image is-128x128"
+                />
               </div>
               <div class="media-content" style="margin-left: 900px">
                 <div class="content">
