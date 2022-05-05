@@ -32,7 +32,12 @@
               <p class="subtitle is-6">ราคา : {{ book[0].price }} บาท</p>
 
               <br />
-              <div v-if="this.checkadmin.length == 0">
+              <div
+                v-show="
+                  this.checkadmin.length == 0 &&
+                  this.book[0].status == 'succeed'
+                "
+              >
                 <div
                   class="level-centere"
                   v-if="

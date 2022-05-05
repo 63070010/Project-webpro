@@ -18,7 +18,10 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// โปรโมชั่น
+
+//////////////////////////////////////////////ไว้ใน Promotion/////////////////////////////////////////////////////////////////
+
+// ข้อมูลโปรโมชั่น
 router.get("/promotion_image", async function (req, res, next) {
   try {
     const promotion_image = await pool.query("SELECT * FROM promotion");
@@ -37,6 +40,57 @@ router.get("/DetailsPromotion/:id", async function (req, res, next) {
   ]);
   res.json(detailPro[0])
 });
+
+// ใช้โปรโมชั่น
+router.put('/submitPromotion', isLoggedIn, async function (req, res, next) {
+  const [row, fields] = await pool.query(
+
+    'SELECT promotion_id FROM promotion WHERE code =?', [req.body.codepromotion])
+
+  await pool.query(
+    'UPDATE `cart` SET promotion_id = ? WHERE cart_id = ?',
+    [row[0].promotion_id, req.body.cart_id]
+  )
+  res.json(row[0].promotion_id)
+});
+
+// ยกเลิกโปรโมชั่น
+router.put('/canceltPromotion', isLoggedIn, async function (req, res, next) {
+  const [row, fields] = await pool.query(
+
+    'SELECT promotion_id FROM promotion WHERE code =?', [req.body.codepromotion])
+
+  await pool.query(
+    'UPDATE `cart` SET promotion_id = ? WHERE cart_id = ?',
+    [null, req.body.cart_id]
+  )
+  res.json()
+});
+
+// แก้ไขราคาตามโปรโมชั่น
+router.put('/usedpronotion', isLoggedIn, upload.single("myImage"), async function (req, res, next) {
+
+
+  const [row1, fields1] = await pool.query(
+    'UPDATE cart SET total_price = ? WHERE cart_id = ?',
+    [req.body.price, req.body.cart_id]
+  )
+
+
+  const [row2, fields2] = await pool.query(
+    "insert into `order` (cart_id, order_image, statement) values (?, ?, 'wait')",
+    [req.body.cart_id, req.file.path]
+  )
+  res.json(req.body.price)
+
+});
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////ไว้ใน ProfileBook รวมกับ ปุ่มอัปเดทสเตรท//////////////////////////////////////////////
 
 
 // โปรไฟล์
@@ -106,7 +160,67 @@ router.get("/Profile", isLoggedIn, async function (req, res, next) {
 
 });
 
+// เพิ่มหนังสือใหม่
+router.post("/books", isLoggedIn, upload.single("myImage"), async function (req, res, next) {
+  const file = req.file;
+  if (!file) {
 
+    return res.status(400).json({ message: "Please upload a file" });
+  }
+
+  const title = req.body.title;
+  const type = req.body.type.join(', ');
+  const price = req.body.price;
+  const desc = req.body.desc;
+
+
+  // Begin transaction
+  const conn = await pool.getConnection();
+  await conn.beginTransaction();
+
+  try {
+
+    let results = await conn.query(
+      `INSERT INTO book (book.price, book.title, book.desc, book.type, book.publish_date, book.image, book.status, book.user_id, book.admin_id) VALUES (?, ?, ?, ?, current_timestamp, ?, "succeed", ?, 7) `,
+      [price, title, desc, type, file.path, req.user.id]
+    );
+
+
+    // const bookId = results[0].insertId;
+    // console.log(bookId)
+
+    // await conn.query(
+    //   "INSERT INTO images(book_id, user_id, file_path, cover) VALUES ?;",
+    //   [pathArray]
+    // );
+
+    await conn.commit();
+    res.send("success!");
+  } catch (err) {
+    await conn.rollback();
+    return res.status(400).json(err);
+  } finally {
+    conn.release();
+  }
+});
+
+
+// หนังสือ
+router.get("/DetailsBook/:id", async function (req, res, next) {
+  const DetailsBook = await pool.query(`SELECT a.user_id, b.id, title, b.desc, b.type, penname, image, b.price, publish_date, b.status
+   FROM book b join author a using(user_id) where b.id = ? `, [
+    req.params.id,
+  ]);
+  res.json(DetailsBook[0])
+
+});
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////ไว้ใน Cart ////////////////////////////////////////////////////////////////////////////////////////
 
 // เช็คตะกร้า
 
@@ -167,15 +281,6 @@ from ebook.order)`
 });
 
 
-// หนังสือ
-router.get("/DetailsBook/:id", async function (req, res, next) {
-  const DetailsBook = await pool.query(`SELECT a.user_id, b.id, title, b.desc, b.type, penname, image, b.price, publish_date
-   FROM book b join author a using(user_id) where b.id = ? `, [
-    req.params.id,
-  ]);
-  res.json(DetailsBook[0])
-
-});
 
 
 // เพิ่มตะกร้า
@@ -194,49 +299,7 @@ router.post('/addcart', isLoggedIn, async function (req, res, next) {
     console.log(err)
   }
 });
-// เพิ่มหนังสือใหม่
-router.post("/books", isLoggedIn, upload.single("myImage"), async function (req, res, next) {
-  const file = req.file;
-  if (!file) {
 
-    return res.status(400).json({ message: "Please upload a file" });
-  }
-
-  const title = req.body.title;
-  const type = req.body.type.join(', ');
-  const price = req.body.price;
-  const desc = req.body.desc;
-
-
-  // Begin transaction
-  const conn = await pool.getConnection();
-  await conn.beginTransaction();
-
-  try {
-
-    let results = await conn.query(
-      `INSERT INTO book (book.price, book.title, book.desc, book.type, book.publish_date, book.image, book.status, book.user_id, book.admin_id) VALUES (?, ?, ?, ?, current_timestamp, ?, "succeed", ?, 7) `,
-      [price, title, desc, type, file.path, req.user.id]
-    );
-
-
-    // const bookId = results[0].insertId;
-    // console.log(bookId)
-
-    // await conn.query(
-    //   "INSERT INTO images(book_id, user_id, file_path, cover) VALUES ?;",
-    //   [pathArray]
-    // );
-
-    await conn.commit();
-    res.send("success!");
-  } catch (err) {
-    await conn.rollback();
-    return res.status(400).json(err);
-  } finally {
-    conn.release();
-  }
-});
 // เพิ่มหนังสือลงในตะกร้า
 router.post('/addbook/:id', isLoggedIn, async function (req, res, next) {
   try {
@@ -316,50 +379,11 @@ router.put('/droptotalprice', isLoggedIn, async function (req, res, next) {
 
 });
 
-// ใช้โปรโมชั่น
-router.put('/submitPromotion', isLoggedIn, async function (req, res, next) {
-  const [row, fields] = await pool.query(
-
-    'SELECT promotion_id FROM promotion WHERE code =?', [req.body.codepromotion])
-
-  await pool.query(
-    'UPDATE `cart` SET promotion_id = ? WHERE cart_id = ?',
-    [row[0].promotion_id, req.body.cart_id]
-  )
-  res.json(row[0].promotion_id)
-});
-
-// ยกเลิกโปรโมชั่น
-router.put('/canceltPromotion', isLoggedIn, async function (req, res, next) {
-  const [row, fields] = await pool.query(
-
-    'SELECT promotion_id FROM promotion WHERE code =?', [req.body.codepromotion])
-
-  await pool.query(
-    'UPDATE `cart` SET promotion_id = ? WHERE cart_id = ?',
-    [null, req.body.cart_id]
-  )
-  res.json()
-});
-
-// แก้ไขราคาตามโปรโมชั่น
-router.put('/usedpronotion', isLoggedIn, upload.single("myImage"), async function (req, res, next) {
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-  const [row1, fields1] = await pool.query(
-    'UPDATE cart SET total_price = ? WHERE cart_id = ?',
-    [req.body.price, req.body.cart_id]
-  )
 
-
-  const [row2, fields2] = await pool.query(
-    "insert into `order` (cart_id, order_image, statement) values (?, ?, 'wait')",
-    [req.body.cart_id, req.file.path]
-  )
-  res.json(req.body.price)
-
-});
-
+//////////////////////////////////////////////////////////////////////////////// ไว้ใน Order //////////////////////////////////////////////////////////////////
 // ออเดอร์
 router.get('/order', isLoggedIn, async function (req, res, next) {
 
@@ -370,18 +394,19 @@ router.get('/order', isLoggedIn, async function (req, res, next) {
 });
 
 // รายการในออเดอร์
-router.get('/order', isLoggedIn, async function (req, res, next) {
-  const [row, fields] = await pool.query('SELECT * FROM `order` join cart c using(cart_id)  where c.user_id = ?',
-    req.user.id)
-  res.json(row)
-});
-
 router.get('/orderlist', isLoggedIn, async function (req, res, next) {
   const [row, fields] = await pool.query('SELECT order_id, title  fROM `order` join cart c using(cart_id) join cart_item ct using(cart_id) join book b on (b.id = ct.book_id) where c.user_id = ?',
     req.user.id)
   res.json(row)
 });
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////// ไว้ใน Admin /////////////////////////////////////////////////
 // หน้าแอดมิน
 //submit
 router.put('/submit/:id', isLoggedIn, async function (req, res, next) {
@@ -468,7 +493,7 @@ router.put('/gowaitdelete/:id', isLoggedIn, async function (req, res, next) {
 });
 
 //ส่งไปให้นักเขียนแก้ไข
-router.put('/gowaitdelete/:id', isLoggedIn, async function (req, res, next) {
+router.put('/gowaitedit/:id', isLoggedIn, async function (req, res, next) {
   await pool.query(
     'UPDATE `book` SET status = "unready" WHERE id = ?',
     [req.params.id]
@@ -476,6 +501,9 @@ router.put('/gowaitdelete/:id', isLoggedIn, async function (req, res, next) {
   res.json()
 
 });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 exports.router
   = router;
 

@@ -80,7 +80,7 @@
                     </div>
                   </div>
                 </router-link>
-                <div class="level ml-2" v-if="this.checkadmin.length == 0">
+                <div class="level ml-2" v-show="this.checkadmin.length == 0">
                   ฿ {{ value.price }}
                   <button
                     v-if="
@@ -100,7 +100,7 @@
                     >มีหนังสือเล่มนี้แล้ว</span
                   >
                 </div>
-                <div class="level ml-2" v-else>
+                <div class="level ml-2" v-show="this.checkadmin.length > 0">
                   ฿ {{ value.price }}
                   <button
                     class="button is-ghost level-right ml-2"
