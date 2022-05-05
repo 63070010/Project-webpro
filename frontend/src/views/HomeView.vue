@@ -40,7 +40,7 @@
           <div class="is-multiline columns is-variable is-2">
             <div
               class="column is-one-quarter"
-              v-for="value in books"
+              v-for="(value, index) in books"
               :key="value.id"
             >
               <div class="card">
@@ -80,7 +80,7 @@
                     </div>
                   </div>
                 </router-link>
-                <div class="level ml-2">
+                <div class="level ml-2" v-if="this.checkadmin.length == 0">
                   ฿ {{ value.price }}
                   <button
                     v-if="
@@ -99,6 +99,24 @@
                   <span v-else class="mt-4 mr-2" style="color: #edc7b7"
                     >มีหนังสือเล่มนี้แล้ว</span
                   >
+                </div>
+                <div class="level ml-2" v-else>
+                  ฿ {{ value.price }}
+                  <button
+                    class="button is-ghost level-right ml-2"
+                    @click="bookdelete(value, index)"
+                    style="color: #123c69"
+                  >
+                    ส่งลบ
+                  </button>
+                  /
+                  <button
+                    class="button is-ghost"
+                    @click="bookedit(value, index)"
+                    style="color: #123c69"
+                  >
+                    ส่งแก้ไข
+                  </button>
                 </div>
               </div>
             </div>
@@ -135,6 +153,7 @@ export default defineComponent({
       numbookincart: 0,
       order: [],
       orderlist: [],
+      checkadmin: [],
     };
   },
   async mounted() {
@@ -183,6 +202,17 @@ export default defineComponent({
         })
         .catch((err) => {
           console.log(err);
+        });
+
+      await axios
+        .get(`http://localhost:3000/admindcheck`)
+        .then((response) => {
+          this.checkadmin = response.data;
+
+          console.log(this.checkadmin);
+        })
+        .catch((error) => {
+          this.error = error.response.data.message;
         });
     },
     imagePath(image) {
@@ -247,6 +277,27 @@ export default defineComponent({
           price: book.price,
         })
         .then(() => {})
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    async bookdelete(book, index) {
+      await axios
+        .put(`http://localhost:3000/gowaitdelete/${book.id}`)
+        .then(() => {
+          this.books.splice(index, 1);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    async bookedit(book, index) {
+      await axios
+        .put(`http://localhost:3000/gowaitedit/${book.id}`)
+        .then(() => {
+          this.books.splice(index, 1);
+        })
         .catch((err) => {
           console.log(err);
         });

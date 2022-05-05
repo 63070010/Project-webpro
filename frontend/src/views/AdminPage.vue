@@ -172,7 +172,7 @@
                   >
                   <a
                     class="card-footer-item"
-                    @click="unsubmit(value.id, indexmain)"
+                    @click="unsubmitdelete(value.id, indexmain)"
                     >ไม่ยืนยัน
                   </a>
                 </footer>
@@ -424,7 +424,16 @@ export default {
           console.log(err);
         });
     },
-
+    async unsubmitdelete(bookId, index) {
+      await axios
+        .put(`http://localhost:3000/unsubmitdelete/${bookId}`)
+        .then(() => {
+          this.booksdelete.splice(index, 1);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     async submitdelete(bookId, index) {
       await axios
         .delete(`http://localhost:3000/submitdelete/${bookId}`)

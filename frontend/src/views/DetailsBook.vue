@@ -32,24 +32,26 @@
               <p class="subtitle is-6">ราคา : {{ book[0].price }} บาท</p>
 
               <br />
-              <div
-                class="level-centere"
-                v-if="
-                  this.totalBook.find((x) => x.book_id == book[0].id) ===
-                  undefined
-                "
-              >
-                <a
-                  class="button is-medium is-info is-outlined"
-                  @click="cardpush(book[0])"
+              <div v-if="this.checkadmin.length == 0">
+                <div
+                  class="level-centere"
+                  v-if="
+                    this.totalBook.find((x) => x.book_id == book[0].id) ===
+                    undefined
+                  "
                 >
-                  เพิ่มลงในตะกร้า
-                </a>
-              </div>
-              <div class="level-centere" v-else>
-                <a class="button is-medium is-info is-outlined" disabled>
-                  มีหนังสือเล่มนี้แล้ว
-                </a>
+                  <a
+                    class="button is-medium is-info is-outlined"
+                    @click="cardpush(book[0])"
+                  >
+                    เพิ่มลงในตะกร้า
+                  </a>
+                </div>
+                <div class="level-centere" v-else>
+                  <a class="button is-medium is-info is-outlined" disabled>
+                    มีหนังสือเล่มนี้แล้ว
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -75,13 +77,14 @@ export default defineComponent({
   data() {
     return {
       book: {
-        0: {},
+        0: { image: "" },
       },
       cart: [],
       cart_item: [],
       pay: {},
       mybook: [],
       totalBook: [],
+      checkadmin: [],
     };
   },
   async mounted() {
@@ -100,25 +103,25 @@ export default defineComponent({
         .catch((error) => {
           this.error = error.response.data.message;
         });
+
+      await axios
+        .get(`http://localhost:3000/admindcheck`)
+        .then((response) => {
+          this.checkadmin = response.data;
+
+          console.log(this.checkadmin);
+        })
+        .catch((error) => {
+          this.error = error.response.data.message;
+        });
     },
     async getcheck() {
       await axios
-        .get(`http://localhost:3000/cart_check/`)
+        .get(`http://localhost:3000/cart_check`)
         .then((response) => {
           this.cart = response.data.cart;
           this.pay = response.data.payment;
           this.mybook = response.data.mybook;
-
-          if (this.cart.length == 0 || this.cart.length == this.pay.length) {
-            axios
-              .post(`http://localhost:3000/addcart`)
-              .then((response) => {
-                this.cart.push(response.data);
-              })
-              .catch((error) => {
-                this.error = error.response.data.message;
-              });
-          }
         })
         .catch((err) => {
           console.log(err);
@@ -131,6 +134,7 @@ export default defineComponent({
         )
         .then((response) => {
           this.cart_item = response.data;
+          this.numbookincart = this.cart_item.length;
         })
         .catch((err) => {
           console.log(err);
@@ -139,12 +143,12 @@ export default defineComponent({
     async cardpush(book) {
       await axios
         .post(`http://localhost:3000/addbook/${book.id}`, {
-          cart_id: this.cart[this.cart.length - 1].cart_id,
           price: book.price,
         })
         .then((response) => {
           this.totalBook = [...this.totalBook, response.data[0]];
           this.cart_item = [...this.cart_item, response.data[0]];
+          this.numbookincart = this.cart_item.length;
         })
 
         .catch((err) => {
@@ -152,7 +156,6 @@ export default defineComponent({
         });
       await axios
         .put(`http://localhost:3000/totalprice`, {
-          cart_id: this.cart[this.cart.length - 1].cart_id,
           price: book.price,
         })
         .then(() => {})

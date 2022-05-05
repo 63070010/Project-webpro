@@ -181,22 +181,16 @@ router.get("/DetailsBook/:id", async function (req, res, next) {
 // เพิ่มตะกร้า
 router.post('/addcart', isLoggedIn, async function (req, res, next) {
   try {
-    await pool.query(
-      'SET FOREIGN_KEY_CHECKS = 0;',
+    const [rows1, fields1] = await pool.query(
+      'INSERT INTO `cart` (`create_date`, `total_price`, `user_id`, `promotion_id`) VALUES (CURRENT_TIMESTAMP, 0, ?, null )',
+      req.user.id
     )
     const [rows2, fields2] = await pool.query(
-      'insert INTO `cart` (`create_date`, `total_price`, `user_id`, `promotion_id`) VALUES (CURRENT_TIMESTAMP, 0, ?, null);', req.user.id
+      'select * from cart where cart_id = ?',
+      [rows1.insertId]
     )
-    const [rows4, fields4] = await pool.query(
-      'select * from cart where cart_id = ?;',
-      [rows2.insertId]
-    )
-    await pool.query(
-      'SET FOREIGN_KEY_CHECKS = 1;',
-    )
-    res.json(rows4)
+    res.json(rows2)
   } catch (err) {
-
     console.log(err)
   }
 });
@@ -419,7 +413,14 @@ router.delete('/submitdelete/:id', async function (req, res, next) {
     res.status(500).json(error)
   }
 });
-
+//unsubmitdelete
+router.put('/unsubmitdelete/:id', isLoggedIn, async function (req, res, next) {
+  await pool.query(
+    'UPDATE `book` SET status = "succeed" WHERE id = ?',
+    [req.params.id]
+  )
+  res.json()
+});
 //submitorder
 router.post('/submitorder/:id', isLoggedIn, async function (req, res, next) {
   await pool.query(
@@ -438,6 +439,38 @@ router.post('/submitorder/:id', isLoggedIn, async function (req, res, next) {
 router.put('/unsubmitorder/:id', isLoggedIn, async function (req, res, next) {
   await pool.query(
     'UPDATE `order` SET status = "not_succeed" WHERE id = ?',
+    [req.params.id]
+  )
+  res.json()
+
+});
+//ดึงไอดีแอดมินมาเช็ค
+router.get("/admindcheck", isLoggedIn, async function (req, res, next) {
+  try {
+    const [row, fields] = await pool.query("SELECT * FROM administrator a join users u on (a.user_id = u.id) where u.id = ?",
+      req.user.id);
+    res.json(row[0])
+  }
+  catch (e) {
+    res.send(e)
+  }
+
+});
+
+//ส่งไปยืนยันลบของแอดมิน
+router.put('/gowaitdelete/:id', isLoggedIn, async function (req, res, next) {
+  await pool.query(
+    'UPDATE `book` SET status = "waitdelete" WHERE id = ?',
+    [req.params.id]
+  )
+  res.json()
+
+});
+
+//ส่งไปให้นักเขียนแก้ไข
+router.put('/gowaitdelete/:id', isLoggedIn, async function (req, res, next) {
+  await pool.query(
+    'UPDATE `book` SET status = "unready" WHERE id = ?',
     [req.params.id]
   )
   res.json()
