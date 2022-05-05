@@ -12,7 +12,9 @@
               <figure class="image is-1by1">
                 <img
                   class="is-rounded"
-                  :src="`${user.imageProfile}`"
+                  :src="'http://localhost:3000/' + user.imageProfile"
+                  alt="Image"
+                  style="object-fit: cover"
                   v-if="user.imageProfile != null"
                 />
               </figure>
@@ -107,7 +109,12 @@
                   <div class="card large">
                     <router-link :to="`/DetailsBook/${card.Bookid}`">
                       <div class="card-image image is-4by5">
-                        <img :src="card.image" alt="Image" />
+                        <img
+                          class="is-rounded"
+                          :src="'http://localhost:3000/' + card.image"
+                          style="object-fit: cover"
+                          v-if="card.image != null"
+                        />
                       </div>
 
                       <div class="card-content" style="height: 170px">
@@ -378,8 +385,8 @@ export default {
       images: [],
       types: [],
       isActive: "MYbook",
-      Book_list: { 0: [] },
-      mysell_book: { 0: [] },
+      Book_list: [],
+      mysell_book: [],
       num_book: 0,
       Add_Book: false,
       Book_name: "",
@@ -393,11 +400,12 @@ export default {
   methods: {
     async getUser_id() {
       await axios
-        .get(`http://localhost:3000/Profile/`)
+        .get(`http://localhost:3000/Profile`)
         .then((response) => {
-          this.user = response.data.profile3[0];
-          this.Book_list = response.data.profile1;
-          this.mysell_book = response.data.profile2;
+          this.Book_list = response.data.mybook;
+          this.mysell_book = response.data.mysellbook;
+          this.user = response.data.username[0];
+
           console.log(this.user);
           console.log(this.Book_list);
           console.log(this.mysell_book);

@@ -384,6 +384,7 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+
       await axios
         .post(`http://localhost:3000/addcart`)
         .then(() => {
@@ -392,7 +393,6 @@ export default {
         .catch((error) => {
           this.error = error.response.data.message;
         });
-
       this.Payment = false;
     },
   },

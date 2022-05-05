@@ -56,31 +56,10 @@
                   />
                 </div>
 
-                <div class="field">
-                  <label class="label" style="color: #123c69"
-                    >ประเภทที่จะ ล็อคอินเข้าสู่ระบบ</label
-                  >
-
-                  <div class="control">
-                    <label class="radio">
-                      <input type="radio" v-model="picked" value="Customer" />
-                      ลูกค้า
-                    </label>
-                    <label class="radio">
-                      <input type="radio" v-model="picked" value="Author" />
-                      นักเขียน
-                    </label>
-                    <label class="radio">
-                      <input type="radio" v-model="picked" value="Admin" />
-                      แอดมิน
-                    </label>
-                  </div>
-                </div>
-
                 <div class="field column">
                   <div class="control">
                     <button
-                    @click="submit"
+                      @click="submit"
                       class="button"
                       style="color: #eee2dc; background-color: #ac3b61"
                     >
@@ -98,10 +77,10 @@
 </template>
 <script>
 import NavBar from "@/components/NavBar";
-import axios from '@/plugins/axios'
+import axios from "@/plugins/axios";
 export default {
   name: "Register-Ebook",
-  props: ['user'],
+  props: ["user"],
   components: {
     NavBar,
   },
@@ -109,31 +88,31 @@ export default {
     return {
       username: "",
       password: "",
-      error: '',
+      error: "",
       picked: "Customer",
     };
   },
   methods: {
-     submit () {
-       const data = {
-         username: this.username,
-         password: this.password
-       }
- 
-       axios.post('http://localhost:3000/user/login/', data)
-         .then(res => {
-           const token = res.data.token                                
-           localStorage.setItem('token', token)
-           this.$emit('auth-change')
-           this.$router.push({path: '/adminPage'})
-           
-         })
-         .catch(error => {
-           this.error = error.response.data
-           console.log(error.response.data)
-         })
-     }
-   }
+    submit() {
+      const data = {
+        username: this.username,
+        password: this.password,
+      };
+
+      axios
+        .post("http://localhost:3000/user/login/", data)
+        .then((res) => {
+          const token = res.data.token;
+          localStorage.setItem("token", token);
+          this.$emit("auth-change");
+          this.$router.push({ path: "/adminPage" });
+        })
+        .catch((error) => {
+          this.error = error.response.data;
+          console.log(error.response.data);
+        });
+    },
+  },
 };
 </script>
 <style lang="">

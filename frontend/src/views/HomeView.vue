@@ -127,9 +127,7 @@ export default defineComponent({
     return {
       books: [],
       search: "",
-      cart: {
-        0: {},
-      },
+      cart: [],
       cart_item: [],
       pay: {},
       mybook: [],
@@ -173,8 +171,8 @@ export default defineComponent({
           this.error = error.response.data.message;
         });
     },
-    getBooks() {
-      axios
+    async getBooks() {
+      await axios
         .get("http://localhost:3000", {
           params: {
             search: this.search,
@@ -201,10 +199,6 @@ export default defineComponent({
           this.cart = response.data.cart;
           this.pay = response.data.payment;
           this.mybook = response.data.mybook;
-
-          console.log(this.cart);
-          console.log(this.pay);
-          console.log(this.mybook);
           if (this.cart.length == 0) {
             axios
               .post(`http://localhost:3000/addcart`)

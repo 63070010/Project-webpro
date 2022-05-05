@@ -41,59 +41,61 @@ router.get("/DetailsPromotion/:id", async function (req, res, next) {
 
 // โปรไฟล์
 router.get("/Profile", isLoggedIn, async function (req, res, next) {
-  const profile1 = await pool.query(`SELECT u.id, first_name, last_name, email, username, imageProfile,b.title,b.desc,b.type,b.image,b.status,b.price,b.id as 'Bookid', penname, bank_number, bank_name, Phonenumber, payment_id
-  from users u
-  left outer join cart c
-  on(u.id = c.user_id)
-  left outer join payment p
-  using(cart_id)
-  left outer join cart_item ct
-  using(cart_id)
-  left outer join book b
-  on(b.id = ct.book_id)
-  left outer join author a
-  on(u.id = a.user_id)
-  where u.id = ? AND p.payment_id != NULL` , [
+
+  const profile1 = await pool.query(`select *
+      from users u 
+      join cart c
+      on (u.id = c.user_id)
+      join cart_item ct
+      using(cart_id)
+      join book b
+      on (b.id = ct.book_id)
+      join author a
+      on (b.user_id = a.user_id)
+      join payment p
+      using(cart_id)
+      where u.id = ?`,
     req.user.id,
 
-  ]);
+  );
   const profile2 = await pool.query(`SELECT b.id, b.title, b.desc, b.type,b.image,b.status,b.price,a.penname
-from book b
-join users u
-on(b.user_id = u.id)
-join author a
-on(u.id = a.user_id)
-where u.id = ?`, [
+            from book b
+            join users u
+            on(b.user_id = u.id)
+            join author a
+            on(u.id = a.user_id)
+            where u.id = ?`,
     req.user.id,
 
-  ]);
+  );
 
   const profile3 = await pool.query(`SELECT u.id, first_name, last_name, email, username, imageProfile,b.title,b.desc,b.type,b.image,b.status,b.price,b.id as 'Bookid', penname, bank_number, bank_name, Phonenumber, payment_id
-  from users u
-  left outer join cart c
-  on(u.id = c.user_id)
-  left outer join payment p
-  using(cart_id)
-  left outer join cart_item ct
-  using(cart_id)
-  left outer join book b
-  on(b.id = ct.book_id)
-  left outer join author a
-  on(u.id = a.user_id)
-  where u.id = ?`, [
+            from users u
+            left outer join cart c
+            on(u.id = c.user_id)
+            left outer join payment p
+            using(cart_id)
+            left outer join cart_item ct
+            using(cart_id)
+            left outer join book b
+            on(b.id = ct.book_id)
+            left outer join author a
+            on(u.id = a.user_id)
+            where u.id = ?`,
     req.user.id,
 
-  ]);
+  );
 
   Promise.all([profile1, profile2, profile3])
     .then((results) => {
       const [profilea, a] = results[0];
       const [profileb, b] = results[1];
       const [profilec, c] = results[2];
+
       res.json({
-        profile1: profilea,
-        profile2: profileb,
-        profile3: profilec,
+        mybook: profilea,
+        mysellbook: profileb,
+        username: profilec,
         error: null,
       });
 
@@ -179,16 +181,22 @@ router.get("/DetailsBook/:id", async function (req, res, next) {
 // เพิ่มตะกร้า
 router.post('/addcart', isLoggedIn, async function (req, res, next) {
   try {
-    const [rows1, fields1] = await pool.query(
-      'INSERT INTO `cart` (`create_date`, `total_price`, `user_id`, `promotion_id`) VALUES (CURRENT_TIMESTAMP, 0, ?, null )',
-      req.user.id
+    await pool.query(
+      'SET FOREIGN_KEY_CHECKS = 0;',
     )
     const [rows2, fields2] = await pool.query(
-      'select * from cart where cart_id = ?',
-      [rows1.insertId]
+      'insert INTO `cart` (`create_date`, `total_price`, `user_id`, `promotion_id`) VALUES (CURRENT_TIMESTAMP, 0, ?, null);', req.user.id
     )
-    res.json(rows2)
+    const [rows4, fields4] = await pool.query(
+      'select * from cart where cart_id = ?;',
+      [rows2.insertId]
+    )
+    await pool.query(
+      'SET FOREIGN_KEY_CHECKS = 1;',
+    )
+    res.json(rows4)
   } catch (err) {
+
     console.log(err)
   }
 });
@@ -249,7 +257,7 @@ router.post('/addbook/:id', isLoggedIn, async function (req, res, next) {
         and u.id = ?`,
       req.user.id
     )
-    console.log(rows[rows.length - 1].cart_id)
+
     const [rows1, fields1] = await pool.query(
       'INSERT INTO `cart_item` (`book_id`, `price`, `cart_id`) VALUES (?, ?, ?)',
       [req.params.id, req.body.price, rows[rows.length - 1].cart_id]
@@ -364,7 +372,7 @@ router.get('/order', isLoggedIn, async function (req, res, next) {
   const [row, fields] = await pool.query('SELECT * FROM `order` join cart c using(cart_id)  where c.user_id = ?',
     req.user.id)
   res.send(row)
-  console.log(row)
+
 });
 
 // รายการในออเดอร์
@@ -400,7 +408,17 @@ router.put('/unsubmit/:id', isLoggedIn, async function (req, res, next) {
   res.json()
 
 });
-
+//submitdelete
+router.delete('/submitdelete/:id', async function (req, res, next) {
+  try {
+    const [rows1, fields1] = await pool.query(
+      'DELETE FROM book WHERE id = ?', [req.params.id]
+    )
+    res.json()
+  } catch (error) {
+    res.status(500).json(error)
+  }
+});
 
 //submitorder
 router.post('/submitorder/:id', isLoggedIn, async function (req, res, next) {
