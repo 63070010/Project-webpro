@@ -6,42 +6,12 @@ const { generateToken } = require("../utils/token");
 const { isLoggedIn } = require('../middlewares')
 router = express.Router();
 
-const passwordValidator = (value, helpers) => {
-    if (value.length < 8) {
-        throw new Joi.ValidationError('Password must contain at least 8 characters')
-    }
-    if (!(value.match(/[a-z]/) && value.match(/[A-Z]/) && value.match(/[0-9]/))) {
-        throw new Joi.ValidationError('Password must be harder')
-    }
-    return value
-}
 
-const usernameValidator = async (value, helpers) => {
-    const [rows, _] = await pool.query("SELECT username FROM users WHERE username = ?", [value])
-    if (rows.length > 0) {
-        const message = 'This username is already taken'
-        throw new Joi.ValidationError(message, { message })
-    }
-    return value
-}
 
-const signupSchema = Joi.object({
-    email: Joi.string().required().email(),
-    mobile: Joi.string().required().pattern(/0[0-9]{9}/),
-    first_name: Joi.string().required().max(150),
-    last_name: Joi.string().required().max(150),
-    password: Joi.string().required().custom(passwordValidator),
-    confirm_password: Joi.string().required().valid(Joi.ref('password')),
-    username: Joi.string().required().min(5).max(20).external(usernameValidator),
-})
+
 
 router.post('/user/signup', async (req, res, next) => {
-    try {
-        await signupSchema.validateAsync(req.body, { abortEarly: false })
-    } catch (err) {
-        return res.status(400).send(err)
-    }
-
+    
     const conn = await pool.getConnection()
     await conn.beginTransaction()
 
@@ -50,12 +20,16 @@ router.post('/user/signup', async (req, res, next) => {
     const first_name = req.body.first_name
     const last_name = req.body.last_name
     const email = req.body.email
-    const mobile = req.body.mobile
-
+    const sex = req.body.sex
+    const birthdate = req.body.birthdate
     try {
+        let results = await conn.query(
+            'INSERT INTO users(username, password, first_name, last_name, email, sex, birth_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [username, password, first_name, last_name, email, sex, birthdate]
+        )
         await conn.query(
-            'INSERT INTO users(username, password, first_name, last_name, email, mobile) VALUES (?, ?, ?, ?, ?, ?)',
-            [username, password, first_name, last_name, email, mobile]
+            'INSERT INTO author(penname, user_id) VALUES ("Guest", ?)',
+            [results[0].insertId]
         )
         conn.commit()
         res.status(201).send()
@@ -103,7 +77,7 @@ router.post('/user/login', async (req, res, next) => {
 
         // Check if password is correct
         console.log(password, user.password)
-        if (password != user.password) {
+        if (!(await bcrypt.compare(password, user.password))) {
 
             throw new Error('Incorrect username or password')
         }
@@ -131,6 +105,18 @@ router.post('/user/login', async (req, res, next) => {
     } finally {
         conn.release()
     }
+})
+
+router.delete('/user/logout', isLoggedIn, async (req, res, next) => {
+
+    try {
+        const [rows1, fields1] = await pool.query(
+          'DELETE FROM tokens WHERE user_id = ?', [req.user.id]
+        )
+        res.json()
+      } catch (error) {
+        res.status(500).json(error)
+      }
 })
 
 router.get("/adminPage", async function (req, res, next) {
