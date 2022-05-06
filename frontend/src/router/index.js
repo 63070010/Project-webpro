@@ -74,16 +74,16 @@ const routes = [
     component: ReadBook
   },
   {
-    path: '/WriteBook',
+    path: '/WriteBook/:bookId/:pageId',
     name: 'WriteBook',
     
     component: WriteBook
   }, 
   {
-    path: '/ReadBook',
+    path: '/ReadBook/:bookId/:pageId',
     name: 'ReadBook',
     
-    component: WriteBook
+    component: ReadBook
   },
 
 

@@ -142,7 +142,7 @@
                       </div>
                     </router-link>
                     <footer class="card-footer">
-                      <a class="card-footer-item">อ่าน</a>
+                      <router-link :to="`/ReadBook/${card.id}/1`"><a class="card-footer-item" >อ่าน</a></router-link>
                     </footer>
                   </div>
                 </div>
@@ -237,18 +237,18 @@
                       card.status == 'unready' || card.status == 'not_succeed'
                     "
                   >
-                    <a class="card-footer-item">เขียนหนังสือต่อ </a>
-                    <a class="card-footer-item">บันทึกหนังสือ </a>
+                    <router-link :to="`/WriteBook/${card.id}/1`"><a class="card-footer-item" >เขียนหนังสือต่อ </a></router-link>
+                    <a class="card-footer-item" @click="setReady(card.id)">บันทึกหนังสือ </a>
                   </footer>
                   <footer class="card-footer" v-if="card.status == 'ready'">
-                    <a class="card-footer-item">ลงทะเบียนขาย</a>
-                    <a class="card-footer-item">ลบหนังสือที่เขียน</a>
+                    <a class="card-footer-item" @click="setWait(card.id)">ลงทะเบียนขาย</a>
+                    <a class="card-footer-item" @click="setReady(card.id)">ลบหนังสือที่เขียน</a>
                   </footer>
                   <footer class="card-footer" v-if="card.status == 'wait'">
                     <a class="card-footer-item">ยกเลิกการลงทะเบียน</a>
                   </footer>
                   <footer class="card-footer" v-if="card.status == 'succeed'">
-                    <a class="card-footer-item">ลบหนังสือที่เขียน</a>
+                    <a class="card-footer-item" @click="setWaitDelete(card.id)">ลบหนังสือที่เขียน</a>
                   </footer>
                 </div>
               </div>
@@ -432,10 +432,10 @@ export default {
       formData.append("price", this.price);
       formData.append("myImage", this.images[0]);
       formData.append("desc", this.detail_book);
-
+      console.log(formData)
       axios
         .post("http://localhost:3000/books", formData)
-        .then(() => this.push({ name: "Profile_user" }))
+        .then(() => this.$router.push({ name: "Profile_user" }, this.getUser_id(), this.Add_Book = false, this.Book_name = "", this.price = "", this.images = [], this.detail_book = ""))
         .catch((e) => console.log(e.response.data));
     },
 
@@ -443,6 +443,24 @@ export default {
       this.DetailBook = true;
       this.num_book = nunber;
     },
+    setReady(bid){
+      axios
+      .put(`http://localhost:3000/setready/${bid}`)
+      .then(() => this.$router.push({ name: "Profile_user" }, this.getUser_id()))
+      .catch((e) => console.log(e.response.data));
+    },
+    setWait(bid){
+      axios
+      .put(`http://localhost:3000/setwait/${bid}`)
+      .then(() => this.$router.push({ name: "Profile_user" }, this.getUser_id()) )
+      .catch((e) => console.log(e.response.data));
+    },
+    setWaitDelete(bid){
+      axios
+      .put(`http://localhost:3000/setwaitdelete/${bid}`)
+      .then(() => this.$router.push({ name: "Profile_user" }, this.getUser_id()))
+      .catch((e) => console.log(e.response.data));
+    }
   },
 };
 </script>

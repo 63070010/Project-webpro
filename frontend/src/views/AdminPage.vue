@@ -7,7 +7,7 @@
     </div>
     <div class="level-right mr-3">
       <div class="level-item">
-        <button class="button is-light" @click="Add_promotion = true">
+        <button class="button is-light" @click="Add_promotion = true ">
           เพิ่ม
         </button>
       </div>
@@ -214,10 +214,13 @@
                     >
                       <span v-if="value.order_id == box.order_id">
                         {{ value.title }}&nbsp;
-                      </span> </span
-                    ><br />ราคาทั้งหมด: {{ box.total_price }}
-                  </p>
+                      </span> </span><br />ราคาทั้งหมด: {{ box.total_price }}
+                      <br/>
+                      สถานะ: {{ box.statement }}
+                    
+                  </p>    
                 </div>
+                
                 <div class="level-right">
                   <div class="level-item">
                     <button
@@ -312,7 +315,21 @@
                 class="input is-medium is-rounded"
                 type="text"
                 style="background-color: #eee2dc"
-                v-model="Book_name"
+                v-model="promotionname"
+              />
+            </div>
+          </div>
+          <div class="field">
+            <label class="label" style="color: #ac3b61"
+              >CODE
+              <!--ชื่อโปรโมชั่น--></label
+            >
+            <div class="control">
+              <input
+                class="input is-medium is-rounded"
+                type="text"
+                style="background-color: #eee2dc"
+                v-model="code"
               />
             </div>
           </div>
@@ -323,12 +340,17 @@
               >
               <div class="file">
                 <label class="file-label">
-                  <input class="file-input" type="file" name="resume" />
                   <span class="file-cta">
                     <span class="file-icon">
                       <i class="fas fa-upload"></i>
                     </span>
-                    <span class="file-label"> Choose a file… </span>
+                    <span>
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg, image/webp"
+                        @change="selectImages"
+                      />
+                    </span>
                   </span>
                 </label>
               </div>
@@ -354,13 +376,13 @@
               <textarea
                 class="textarea is-medium is-rounded"
                 style="background-color: #eee2dc"
-                v-model="detail_book"
+                v-model="detail_promotion"
               ></textarea>
             </div>
           </div>
         </section>
         <footer class="modal-card-foot">
-          <button class="button is-success">เพิ่ม</button>
+          <button class="button is-success" @click="submitPromotion">เพิ่ม</button>
           <button class="button" @click="Add_promotion = false">ยกเลิก</button>
         </footer>
       </div>
@@ -381,10 +403,14 @@ export default {
     return {
       Add_promotion: false,
       cancel_promotion: false,
+      end_promotion: "",
+      code: "",
       books: [],
       booksdelete: [],
       order: [],
       orderlist: [],
+      promotionname: "",
+      images: [],
     };
   },
   async mounted() {
@@ -403,6 +429,8 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },selectImages(event) {
+      this.images = event.target.files;
     },
     async submit(bookId, index) {
       await axios
@@ -446,9 +474,7 @@ export default {
     },
     async submitorder(box, index) {
       await axios
-        .post(`http://localhost:3000/submitorder/${box.order_id}`, {
-          cart_id: box.cart_id,
-        })
+        .put(`http://localhost:3000/submitorder/${box.order_id}/${box.cart_id}`)
         .then(() => {
           this.order.splice(index, 1);
         })
@@ -465,6 +491,19 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    submitPromotion() {
+      let formData = new FormData();
+      formData.append("title", this.promotionname);
+      formData.append("expire_date", this.end_promotion);
+      formData.append("myImage", this.images[0]);
+      formData.append("desc", this.detail_promotion);
+      formData.append("code", this.code);
+      console.log(formData)
+      axios
+        .post("http://localhost:3000/promotions", formData)
+        .then(() => this.$router.push({ name: "AdminPage" }))
+        .catch((e) => console.log(e.response.data));
     },
   },
 };

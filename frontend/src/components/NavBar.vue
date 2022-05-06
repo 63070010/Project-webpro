@@ -25,8 +25,8 @@
                 >โปรไฟล์</router-link
               >
               <a class="ml-2 mr-1" style="color: #ac3b61">/</a>
-              <router-link to="/login" style="color: #ac3b61">
-                ออกจากระบบ</router-link
+              <a @click="Logout" style="color: #ac3b61">
+                ออกจากระบบ</a
               >
             </a>
           </div>
@@ -82,6 +82,18 @@ export default {
       axios.get("http://localhost:3000/user/me").then((res) => {
         this.user = res.data;
       });
+    },
+    Logout() {
+      axios
+        .delete("http://localhost:3000/user/logout/")
+        .then(() => {
+          window.localStorage.clear();
+          this.user = null
+          this.$router.push({ path: "/" });
+        })
+        .catch((error) => {
+          this.error = error.response;
+        });
     },
   },
 };

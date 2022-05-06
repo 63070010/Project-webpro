@@ -36,12 +36,13 @@
                       class="input is-medium is-rounded"
                       type="text"
                       style="background-color: #eee2dc"
-                      v-model="user_name"
+                      v-model="username"
                     />
                     <span class="icon is-small is-left">
                       <i class="fas fa-user"></i>
                     </span>
                   </div>
+
                 </div>
 
                 <div class="field-body">
@@ -53,7 +54,7 @@
                       <input
                         class="input is-medium is-rounded"
                         type="text"
-                        v-model="First_Name"
+                        v-model="first_name"
                         style="background-color: #eee2dc"
                       />
                     </div>
@@ -66,7 +67,7 @@
                       <input
                         class="input is-medium is-rounded"
                         type="text"
-                        v-model="Last_Name"
+                        v-model="last_name"
                         style="background-color: #eee2dc"
                       />
                     </div>
@@ -79,7 +80,7 @@
                     <input
                       class="input is-medium is-rounded"
                       type="email"
-                      v-model="Email"
+                      v-model="email"
                       style="background-color: #eee2dc"
                     />
                     <span class="icon is-small is-left">
@@ -97,7 +98,7 @@
                       <input
                         class="input is-medium is-rounded"
                         type="date"
-                        v-model="Birthday"
+                        v-model="birthday"
                         style="background-color: #eee2dc"
                       />
                     </div>
@@ -107,7 +108,7 @@
                     <label class="label" style="color: #ac3b61">เพศ</label>
 
                     <div class="select is-fullwidth is-medium is-rounded">
-                      <select v-model="Sex" style="background-color: #eee2dc">
+                      <select v-model="sex" style="background-color: #eee2dc">
                         <option value="Male">ชาย</option>
                         <option value="Famale">หญิง</option>
                         <option value="not_specified">ไม่ระบุ</option>
@@ -124,7 +125,7 @@
                     :disabled="disabled"
                     class="input is-medium is-rounded"
                     type="text"
-                    v-model="PhoneNumber"
+                    v-model="mobile"
                     style="background-color: #eee2dc"
                   />
                 </div>
@@ -138,7 +139,7 @@
                       :disabled="disabled"
                       class="input is-medium is-rounded"
                       type="text"
-                      v-model="BankName"
+                      v-model="bankName"
                       style="background-color: #eee2dc"
                     />
                   </div>
@@ -151,7 +152,7 @@
                       :disabled="disabled"
                       class="input is-medium is-rounded"
                       type="text"
-                      v-model="BankNumber"
+                      v-model="bankNumber"
                       style="background-color: #eee2dc"
                     />
                   </div>
@@ -162,7 +163,7 @@
                   <input
                     class="input is-medium is-rounded"
                     type="text"
-                    v-model="Password"
+                    v-model="password"
                     style="background-color: #eee2dc"
                   />
                 </div>
@@ -174,41 +175,9 @@
                   <input
                     class="input is-medium is-rounded"
                     type="text"
-                    v-model="Retype_Password"
+                    v-model="confirm_password"
                     style="background-color: #eee2dc"
                   />
-                </div>
-
-                <div class="field">
-                  <label class="label" style="color: #123c69"
-                    >ประเภทที่จะ สมัครสมาชิก</label
-                  >
-
-                  <div class="control">
-                    <label class="radio">
-                      <input
-                        type="radio"
-                        v-model="picked"
-                        value="Customer"
-                        @click="
-                          (disabled = true),
-                            ((BankName = ''),
-                            (BankNumber = ''),
-                            (PhoneNumber = ''))
-                        "
-                      />
-                      ลูกค้า
-                    </label>
-                    <label class="radio">
-                      <input
-                        type="radio"
-                        v-model="picked"
-                        value="Author"
-                        @click="disabled = false"
-                      />
-                      นักเขียน
-                    </label>
-                  </div>
                 </div>
 
                 <div class="field column">
@@ -231,33 +200,93 @@
   </div>
 </template>
 <script>
-import NavBar from "@/components/NavBar";
+import axios from "@/plugins/axios";
+import {
+  required,
+  email,
+  helpers,
+  minLength,
+  maxLength,
+  sameAs,
+} from "vuelidate/lib/validators";
+
+function mobile(value) {
+  return !helpers.req(value) || !!value.match(/0[0-9]{9}/);
+}
+
+function complexPassword(value) {
+  if (!(value.match(/[a-z]/) && value.match(/[A-Z]/) && value.match(/[0-9]/))) {
+    return false;
+  }
+  return true;
+}
 
 export default {
-  components: {
-    NavBar,
-  },
-  name: "Register-Ebook",
   data() {
     return {
-      user_name: "",
-      First_Name: "",
-      Last_Name: "",
-      Email: "",
-      Birthday: "",
-      Sex: "",
-      PhoneNumber: "",
-      BankName: "",
-      BankNumber: "",
-      Password: "",
-      Retype_Password: "",
-      disabled: true,
-      picked: "Customer",
+      username: "",
+      password: "",
+      confirm_password: "",
+      email: "",
+      mobile: "",
+      first_name: "",
+      last_name: "",
+      sex: "",
+      birthday: ""
     };
   },
   methods: {
     submit() {
-      //ตรงนี้เช็คข้อมูลซ้ำไหม อีเมลล มี @ ไหม
+
+        let data = {
+          username: this.username,
+          password: this.password,
+          sex: this.sex,
+          birthdate: this.birthday,
+          email: this.email,
+          mobile: this.mobile,
+          first_name: this.first_name,
+          last_name: this.last_name,
+        };
+
+        axios
+          .post("http://localhost:3000/user/signup", data)
+          .then(() => {
+            alert("Sign up Success");
+          })
+          .catch((err) => {
+            alert(err.response.data.details);
+          });
+      
+    },
+  },
+  validations: {
+    email: {
+      required: required,
+      email: email,
+    },
+    mobile: {
+      required: required,
+      mobile: mobile,
+    },
+    password: {
+      required: required,
+      minLength: minLength(8),
+      complex: complexPassword,
+    },
+    confirm_password: {
+      sameAs: sameAs("password"),
+    },
+    username: {
+      required: required,
+      minLength: minLength(5),
+      maxLength: maxLength(20),
+    },
+    first_name: {
+      required: required,
+    },
+    last_name: {
+      required: required,
     },
   },
 };
